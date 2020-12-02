@@ -121,7 +121,6 @@ export default {
                 event.target.style.height = width * 0.56 + "px"
 
                 const infos = document.getElementsByClassName("info")[0]
-
                 infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
             })
         })
@@ -220,9 +219,45 @@ export default {
         vertical-align: top;
     }
 
-    .info {
-        overflow-y: scroll;
+    .episodes {
+        display: inline-block;
+        width: 50%;
         vertical-align: top;
+        overflow-y: scroll;
+    }
+
+    @media only screen and (max-width: 1000px) {
+        .left {
+            width: 100%;
+            vertical-align: top;
+        }
+
+        .media {
+            position: sticky;
+            top: 0;
+            border-radius: 0;
+        }
+
+        iframe {
+            border-radius: 0;
+        }
+
+        .episodes {
+            width: 100%;
+            height: auto;
+            overflow: scroll;
+        }
+
+        .player {
+            overflow: scroll;
+            padding: 0px;
+            margin: 0;
+            height: 100%;
+        }
+
+        .info {
+            margin: 5px;
+        }
     }
 
     .showTitle {
@@ -244,12 +279,8 @@ export default {
         display: inline;
     }
 
-    .episodes {
-        display: inline-block;
-        width: 50%;
-        height: 100%;
-        vertical-align: top;
-        overflow-y: scroll;
+    .season {
+        width: 100%;
     }
 
     .season h2{

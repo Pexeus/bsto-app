@@ -68,7 +68,7 @@ export default {
     .searchbar {
         width: 100%;
         text-align: center;
-        padding: 50px;
+        padding: 5%;
     }
 
     input {
@@ -80,7 +80,7 @@ export default {
         padding-right: 20px;
         border-radius: 5px;
         width: 500px;
-        max-width: calc(100% - 100px);
+        max-width: 100%;
         box-shadow: 0px 1px 5px var(--shadow);
     }
 
