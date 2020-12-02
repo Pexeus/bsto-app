@@ -1,17 +1,56 @@
 <template>
-  <Search/>
-  <Genres/>
+  <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
+
+  <Header v-if="isLoggedIn.status"/>
+  <Player v-if="isLoggedIn.status" :showID="showID"/>
+  <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
+  <Genres v-if="isLoggedIn.status"  @newshow="openPlayer($event)"/>
 </template>
 
 <script>
+
+import Header from "./components/Header"
+import Player from "./components/Player"
 import Genres from './components/Genres'
 import Search from "./components/Search"
+import Login from "./components/Login"
+
+import { reactive } from 'vue'
 
 export default {
   name: 'App',
   components: {
+    Login,
+    Header,
+    Player,
     Search,
     Genres
+  },
+
+  setup() {
+    const showID = reactive({value: "ddd"})
+    const isLoggedIn = reactive({status:localStorage.jwt})
+
+    function openPlayer(id) {
+      showID.value = id
+    }
+
+    function decodeToken(token) {
+      let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
+      payload = JSON.parse(Buffer.from(payload, 'base64').toString())
+      return payload
+    }
+
+    function loggedin(token) {
+      if(token) {
+        isLoggedIn.status = true
+        let decoded = decodeToken(token)
+        // decoded token
+      }
+    }
+    
+
+    return {showID, openPlayer, loggedin, isLoggedIn}
   }
 }
 </script>

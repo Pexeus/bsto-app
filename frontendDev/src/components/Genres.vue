@@ -1,6 +1,5 @@
 <template>
     <div class="genres">
-        <Player :showID="showID"/>
         <div class="genre" v-for="genre in shows.genres" :key="genre.length">
             <h2 class="genreName">{{genre.title}}</h2>
             <p class="swipeRight" @click="swipe">></p>
@@ -22,14 +21,10 @@
 
 <script>
 import { reactive } from 'vue'
-import Player from "./Player"
 export default {
     name: "Genres",
-    components: {
-        Player
-    },
 
-    setup() {
+    setup(props, context) {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
         const shows = reactive({genres: {}})
         const showID = reactive({value: "ddd"})
@@ -54,7 +49,7 @@ export default {
                 target = target.parentElement
             }
 
-            showID.value = target.id
+            context.emit('newshow', target.id)
         }
 
         loadShows()
@@ -67,8 +62,6 @@ export default {
             const target = event.target
 
             let scrollValue = 0
-
-            console.log(target.innerHTML);
 
             if (target.innerHTML == "&lt;") {
                 scrollValue = showContainer.scrollLeft - showContainer.offsetWidth
@@ -92,7 +85,7 @@ export default {
 <style scoped>
     .genres {
         width: 100%;
-        height: 100vh;
+        min-height: 100vh;
         padding-top: 20px;
     }
 

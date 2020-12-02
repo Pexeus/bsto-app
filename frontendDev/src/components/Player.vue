@@ -1,7 +1,10 @@
 <template>
     <div class="playerContainer" @click="closePlayer()">
+        <div class="loader">
+            <h3>Lade Episoden...</h3>
+            <i class="gg-spinner-alt"></i>
+        </div>
         <div class="player">
-            {{data}}
             <div class="left">
                 <div class="media">
                     <iframe id="mediaFrame" :src="player.source" allowfullscreen frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
@@ -80,10 +83,10 @@ export default {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         watch(() => props.showID.value, async () => {
+            document.getElementsByClassName("playerContainer")[0].style.display = "block"
+
             const response = await fetch(host + `episodes/${props.showID.value}`)
             const show = await response.json()
-
-            console.log(props.showID.value);
 
             let playerActive = false
 
@@ -104,23 +107,23 @@ export default {
             }
 
             data.show = show
-            console.log(data.show);
 
             seasonNr.value = 0
 
             const iframe = document.getElementById("mediaFrame")
             iframe.addEventListener("load", () => {
+                document.getElementsByClassName("player")[0].style.display = "block"
+                document.getElementsByClassName("loader")[0].style.display = "none"
+
+
                 const width = event.target.offsetWidth
 
                 event.target.style.height = width * 0.56 + "px"
 
                 const infos = document.getElementsByClassName("info")[0]
-                console.log(infos);
 
                 infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
             })
-
-            document.getElementsByClassName("playerContainer")[0].style.display = "block"
         })
 
         function setMediaSource(url) {
@@ -158,6 +161,32 @@ export default {
         display: none;
     }
 
+    .loader {
+        padding: 30px;
+        background-color: var(--dark);
+        display: inline-block;
+        border-radius: 5px;
+        margin-top: 40vh;
+        font-size: large;
+        box-shadow: 0px 3px 10px black;
+    }
+
+    .iconWrapper {
+        width: 300;
+        text-align: center;
+    }
+
+    .loader h3 {
+        display: block;
+        font-weight: 400;
+    }
+
+    .loader i {
+        margin-left: -40px;
+        padding-bottom: 40px;
+        padding-top: 25px;
+    }
+
     .player {
         padding: 30px;
         background-color: var(--mid);
@@ -170,6 +199,8 @@ export default {
         height: calc(100vh - 10vh);
         text-align: left;
         border-radius: 5px;
+        display: none;
+        box-shadow: 0px 3px 10px black;
     }
 
     .media {
@@ -266,5 +297,29 @@ export default {
         display: inline-block;
         margin: 3px;
         margin-top: 6px;
+    }
+
+    @keyframes spinneralt {
+    0% { transform: rotate(0deg) }
+    to { transform: rotate(359deg) }
+    }
+    .gg-spinner-alt {
+        transform: scale(var(--ggs,1))
+    }
+    .gg-spinner-alt,
+    .gg-spinner-alt::before {
+        box-sizing: border-box;
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 40px
+    }
+    .gg-spinner-alt::before {
+        content: "";
+        position: absolute;
+        border-radius: 100px;
+        animation: spinneralt 1s cubic-bezier(.6,0,.4,1) infinite;
+        border: 4px solid transparent;
+        border-top-color: var(--bright);
     }
 </style>

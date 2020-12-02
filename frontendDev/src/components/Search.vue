@@ -1,6 +1,5 @@
 <template>
     <div class="search">
-        <Player :showID="showID"/>
         <div class="searchbar">
             <input type="text" class="SearchInput" @keydown="requestResults()" id="queryInput" placeholder="Suche...">
         </div>
@@ -20,18 +19,13 @@
 
 <script>
 import { reactive } from 'vue'
-import Player from "./Player"
 
 export default {
     name: "Search",
-    components: {
-        Player
-    },
 
-    setup() {
+    setup(props, context) {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
         const data = reactive({results: []})
-        const showID = reactive({value: "ddd"})
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -47,7 +41,6 @@ export default {
                 const results = await response.json()
 
                 if (document.getElementById("queryInput").value == results.query) {
-                    console.log(results.results);
                     data.results = results.results
                 }
             }
@@ -63,11 +56,10 @@ export default {
                 target = target.parentElement
             }
 
-            showID.value = target.id
-            console.log(target.id);
+            context.emit('newshow', target.id)
         }
 
-        return {requestResults, data, showID, openShow}
+        return {requestResults, data, openShow}
     }
 }
 </script>
@@ -87,7 +79,8 @@ export default {
         padding-left: 20px;
         padding-right: 20px;
         border-radius: 5px;
-        min-width: 30%;
+        width: 500px;
+        max-width: calc(100% - 100px);
         box-shadow: 0px 1px 5px var(--shadow);
     }
 
