@@ -1,6 +1,7 @@
 <template>
     <div class="playerContainer" @click="closePlayer()">
         <div class="player">
+            {{data}}
             <div class="left">
                 <div class="media">
                     <iframe id="mediaFrame" :src="player.source" allowfullscreen frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
@@ -82,6 +83,8 @@ export default {
             const response = await fetch(host + `episodes/${props.showID.value}`)
             const show = await response.json()
 
+            console.log(props.showID.value);
+
             let playerActive = false
 
             for (let season in show.seasons) {
@@ -101,7 +104,7 @@ export default {
             }
 
             data.show = show
-            console.log(data);
+            console.log(data.show);
 
             seasonNr.value = 0
 
@@ -127,6 +130,8 @@ export default {
 
         function closePlayer() {
             if (event.target.className == "playerContainer") {
+                data.show = {}
+
                 document.getElementsByClassName("playerContainer")[0].style.display = "none"
                 player.source = ""
             }
@@ -147,7 +152,7 @@ export default {
         position: fixed;
         top: 0;
         left: 0;
-        background-color: rgba(0, 0, 0, 0.616);
+        background-color: rgba(0, 0, 0, 0.658);
         z-index: 100;
         text-align: center;
         display: none;
@@ -155,7 +160,7 @@ export default {
 
     .player {
         padding: 30px;
-        background-color: #394867;
+        background-color: var(--mid);
         display: inline-block;
         border-radius: 5px;
         margin-left: 5%;
@@ -163,7 +168,6 @@ export default {
         margin-top: 5vh;
         margin-bottom: 5vh;
         height: calc(100vh - 10vh);
-        color: white;
         text-align: left;
         border-radius: 5px;
     }
@@ -227,12 +231,13 @@ export default {
         padding: 10px;
         margin: 5px;
         font-size: large;
-        box-shadow: 0px 0px 2px #1e2738;
+        box-shadow: 0px 0px 2px var(--shadow);
         cursor: pointer;
+        border-radius: 5px;
     }
 
     .episode:hover {
-        background-color:  #1e273856;
+        background-color:  var(--bright);
     }
 
     .genres {
@@ -241,11 +246,12 @@ export default {
     }
 
     .genreTag{
-        background-color: white;
+        background-color: var(--bright);
         border-radius: 18px;
         color: #394867;
         display: inline-block;
-        margin: 3px;
+        margin-right: 6px;
+        margin-bottom: 6px;
         font-weight: bold;
         padding: 4px;
         padding-left: 8px;

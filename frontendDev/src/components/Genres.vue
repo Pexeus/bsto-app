@@ -1,6 +1,6 @@
 <template>
-    <Player :showID="showID"/>
     <div class="genres">
+        <Player :showID="showID"/>
         <div class="genre" v-for="genre in shows.genres" :key="genre.length">
             <h2 class="genreName">{{genre.title}}</h2>
             <p class="swipeRight" @click="swipe">></p>
@@ -97,10 +97,10 @@ export default {
     }
 
     h2 {
-        color: #f1f6f9;
-        padding-top: 5px;
+        padding-top: 15px;
         padding-left: 5px;
         position: relative;
+        font-weight: 400;
     }
 
     .genre {
@@ -112,9 +112,8 @@ export default {
         right: 0px;
         text-align: center;
         font-size: 20pt;
-        color: white;
         cursor: pointer;
-        background-color: #394867;
+        background-color: var(--shadow);
         width: 30px;
         height: 28vh;
         margin-top: 17px;
@@ -134,9 +133,8 @@ export default {
         left: 0px;
         text-align: center;
         font-size: 20pt;
-        color: white;
         cursor: pointer;
-        background-color: #394867;
+        background-color: var(--shadow);
         width: 30px;
         height: 28vh;
         margin-top: 17px;
@@ -170,7 +168,7 @@ export default {
         border-radius: 5px;
         margin-left: 6px;
         margin-right: 6px;
-        box-shadow: 0px 3px 10px #14274e;
+        box-shadow: 0px 3px 10px var(--shadow);
         cursor: pointer;
         position: relative;
     }
@@ -181,8 +179,7 @@ export default {
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #394867;
-        color: white;
+        background-color: var(--mid);
         padding: 5px;
         padding-top: 10px;
         padding-bottom: 10px;
@@ -192,16 +189,14 @@ export default {
     }
 
     .showTitle {
-        color: white;
         font-size: large;
         padding: 3px;
         margin-bottom: 20px;
     }
 
     .showTag {
-        background-color: white;
+        background-color: var(--bright);
         border-radius: 12px;
-        color: #394867;
         display: inline-block;
         margin: 3px;
         font-size: small;
@@ -214,7 +209,12 @@ export default {
     .show:hover {
         transform: scale(1.06);
         position: absolutes;
-        box-shadow: 0px 0px 10px #10203f;
+        box-shadow: 0px 0px 10px var(--shadow);
+    }
+
+    .show:hover img {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
     }
 
     .show:hover .overview {
