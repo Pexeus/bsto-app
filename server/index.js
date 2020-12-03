@@ -1,40 +1,24 @@
 const express = require("express")
-const session = require("express-session")
 const app = express()
 
 const knex = require("./db/connection")
 const db = knex.getDB()
 
-const bcrypt = require("./mybcrypt")
-const cors = require("./cors")
+const jwt = require("modjwt")
+
+const bcrypt = require("bcrypt")
+const saltRounds = 10
+
+const cors = require("cors")
+
+const staticRoot = "../client"
 
 const PORT = process.env.port || 96
 
-// SESSION STUFF
-const SESS_NAME = "sid"
-const SESS_SECRET = "$2b$10$a64NVceTGIElwFFZve3EUOpY5QUVRqhS6xgtyhPRdl6HH8qIAkEEm"
-const SESS_LIFETIME = 1000 * 60 * 60 * 2 // 2h (ms)
-const SESS_SEC = false
-
-var sess = {}
-
-app.use(session({
-    name: SESS_NAME,
-    resave: false,
-    saveUninitialized: false,
-    secret: SESS_SECRET,
-    cookie: {
-        maxAge: SESS_LIFETIME,
-        sameSite: true,
-        secure: SESS_SEC
-    }
-}))
-
 app.use(express.json())
+app.use(express.static(staticRoot))
+app.use(cors())
 
-app.use('/', cors)
-
-//api stuff
 app.use("/api", require("./api/api"))
 
 app.listen(PORT, () => {
@@ -43,10 +27,36 @@ app.listen(PORT, () => {
     console.log(`> listening on port ${PORT}`);
 })
 
-app.post("/login", (req, res) => {
-
+app.get("/", (req, res) => {
+    res.status(200).json({message:"bsto-app backend"})
 })
+app.get("/hash/:plain", async (req, res) => {
+    let result = await bcrypt.hash(req.params.plain, saltRounds)
+    res.status(200).end(result)
+})
+app.post("/login", async (req, res) => {
+    let input = req.body
+    if(input.username && input.password) {
+        // username found
+        let results = await db("users").where({name: input.username})
+        let passCheck = await bcrypt.compare(input.password, results[0].password)
 
-app.post("/logout", (req, res) => {
+        const user = await db("users").where({name: input.username})
+        console.log(user);
 
+        if(passCheck == true) {
+            // password correct
+            let lifetime = 86400 * 7// 7 days (seconds)
+            let token = jwt.createToken({id: user[0].ID, name: user[0].name}, lifetime)
+            res.json(token)
+        }
+        else {
+            // wrong password
+            res.status(400).json({password:false})
+        }
+    }
+    else {
+        // username not found
+        res.status(400).json({username:false})
+    }
 })

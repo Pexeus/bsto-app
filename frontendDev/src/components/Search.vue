@@ -1,11 +1,10 @@
 <template>
-    <div class="genres">
-        <div class="genre" v-for="genre in shows.genres" :key="genre.length">
-            <h2 class="genreName">{{genre.title}}</h2>
-            <p class="swipeRight" @click="swipe">></p>
-            <p class="swipeLeft"  @click="swipe">&lt;</p>
-            <div class="showWrapper">
-            <div class="show" v-for="show in genre" :key="show.length" @click="openShow()" :id=show.SID>
+    <div class="search">
+        <div class="searchbar">
+            <input type="text" class="SearchInput" @keydown="requestResults()" id="queryInput" placeholder="Suche...">
+        </div>
+        <div class="results">
+            <div class="show" v-for="show in data.results" :key="show.length" @click="openShow()" :id=show.ID>
                 <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/proxy/M6EzbRlGY17V5U8_3ijVqh2Z8GwzUl4W62HZ6jYbEFsQWlr1GGC8CofYPrsmVcYawFGjb4xPHsCqIxBOIRHP0Oltu3a0GRuMU_HghMFMfVJ9mBKjwuS6QFtwwRrkYgdyWYAM3Q';">
                 <div class="overview">
                     <p class="showTitle">{{show.title}}</p>
@@ -16,29 +15,37 @@
             </div>
         </div>
     </div>
-    </div>
 </template>
 
 <script>
 import { reactive } from 'vue'
+
 export default {
-    name: "Genres",
+    name: "Search",
 
     setup(props, context) {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
-        const shows = reactive({genres: {}})
-        const showID = reactive({value: "ddd"})
+        const data = reactive({results: []})
 
-        async function loadShows() {
-            var genres = await fetch(host + "genres")
-            genres = await genres.json()
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
-            for (let i = 0; i < genres.length; i++) {
-                let genre = genres[i]
+        async function requestResults() {
+            await sleep(100)
 
-                let response = await fetch(host + `shows/genre/${genre}`)
-                shows.genres[genre] = await response.json()
-                shows.genres[genre].title = genre
+            const query = document.getElementById("queryInput").value
+
+            if (query != "") {
+                const response = await fetch(host + `search/${query}`)
+                const results = await response.json()
+
+                if (document.getElementById("queryInput").value == results.query) {
+                    data.results = results.results
+                }
+            }
+            else {
+                data.results = []
             }
         }
 
@@ -76,128 +83,50 @@ export default {
             return payload
         }
 
-        loadShows()
-        return {shows, showID, openShow}
-    },
-
-    methods: {
-        swipe(event) {
-            const showContainer = event.target.parentElement.childNodes[3]
-            const target = event.target
-
-            let scrollValue = 0
-
-            if (target.innerHTML == "&lt;") {
-                scrollValue = showContainer.scrollLeft - showContainer.offsetWidth
-            }
-            else {
-                scrollValue = showContainer.scrollLeft + showContainer.offsetWidth
-            }
-
-            const options = {
-                top: 0,
-                left: scrollValue,
-                behavior: 'smooth'
-            }
-
-            showContainer.scroll(options);
-        },
-    },
+        return {requestResults, data, openShow}
+    }
 }
 </script>
 
 <style scoped>
-    .genres {
+    .searchbar {
         width: 100%;
-        min-height: 100vh;
-        padding-top: 20px;
+        text-align: center;
+        padding-top: 5vh;
+        padding-bottom: 5vh;
     }
 
-    .addWatchlist {
-        float: right;
+    input {
+        background-color: var(--mid);
+        border: 1px solid var(--shadow);
+        font-size: larger;
         padding: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
         border-radius: 5px;
+        width: 500px;
+        max-width: 100%;
+        box-shadow: 0px 1px 5px var(--shadow);
     }
 
-    .addWatchlist:hover {
-        transform: scale(1.1);
+    input:focus {
+        box-shadow: 0px 3px 10px var(--shadow);
     }
 
-    h2 {
-        padding-top: 15px;
-        padding-left: 5px;
-        position: relative;
-        font-weight: 400;
-    }
-
-    .genre {
-        position: relative;
-    }
-
-    .swipeRight {
-        position: absolute;
-        right: 0px;
-        text-align: center;
-        font-size: 20pt;
-        cursor: pointer;
-        background-color: var(--shadow);
-        width: 30px;
-        height: 28vh;
-        margin-top: 17px;
-        opacity: .7;
-        z-index: 1;
-        line-height: 28vh;
-        vertical-align: middle;
-    }
-
-    .swipeRight:hover {
-        opacity: .9;
-        width: 40px;
-    }
-
-    .swipeLeft {
-        position: absolute;
-        left: 0px;
-        text-align: center;
-        font-size: 20pt;
-        cursor: pointer;
-        background-color: var(--shadow);
-        width: 30px;
-        height: 28vh;
-        margin-top: 17px;
-        opacity: .7;
-        z-index: 1;
-        line-height: 28vh;
-        vertical-align: middle;
-    }
-
-    .swipeLeft:hover {
-        opacity: .9;
-        width: 40px;
-    }
-
-    .showWrapper {
+    .results {
         width: 100%;
-        overflow-x: scroll;
-        display: flex;
-        padding: 10px;
-        padding-top: 17px;
-        padding-bottom: 17px;
-        position: relative;
-    }
-
-    .showWrapper::-webkit-scrollbar {
-        display: none;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     .show {
         height: 28vh;
         border-radius: 5px;
-        margin-left: 6px;
-        margin-right: 6px;
+        margin: 10px;
         box-shadow: 0px 3px 10px var(--shadow);
         cursor: pointer;
         position: relative;
+        display: inline-block;
     }
 
     .overview {

@@ -26,6 +26,10 @@ router.get("/episodes/:sid", async (req, res) => {
     var seasons = await db("seasons").where({ID_show:req.params.sid})
     var shows = await db("shows").where({ID:req.params.sid})
     var meta = await db("metadata").where({SID:req.params.sid})
+    var UID = req.query.UID
+    var SID = req.params.sid
+
+    console.log(UID);
 
     // convert string arrays { one;two;three; } to arrays [one, two, three]
     meta[0].actors = strToArr(meta[0].actors)
@@ -60,8 +64,50 @@ router.get("/episodes/:sid", async (req, res) => {
         }
         result.seasons.push(season_obj)
     }
+
+    //watchlist check
+    const watchlistCheck = await db("watchlist").where({UID: UID, SID: SID})
+
+    if (watchlistCheck.length != 0) {
+        result.info.inWatchlist = true
+    }
+    else {
+        result.info.inWatchlist = false
+    }
+
     // send result object to client
     res.json(result)
+})
+
+router.get("/search/:query",async (req, res) => {
+    console.clear()
+    const query = req.params.query
+
+    const dispatch = {query: query}
+
+    const results = await db("shows")
+    .whereRaw(`LOWER(title) LIKE ?`, [`%${query}%`])
+    .limit(30)
+
+    for (result of results) {
+        const metadata = await db("metadata")
+        .where({SID: result.ID})
+        .select("cover", "genres", "SID")
+
+        //es werden falsch bilder eingetragen
+
+        //console.log(result.title);
+        //console.log(metadata[0].SID);
+
+        if(metadata[0] != undefined) {
+            result.cover = metadata[0].cover
+            result.genres = strToArr(metadata[0].genres)
+        }
+    }
+
+    dispatch.results = results
+
+    res.end(JSON.stringify(dispatch))
 })
 
 router.get("/genres", async(req, res) => {
@@ -94,32 +140,115 @@ router.get("/count/genres/:genre", async (req, res) => {
         }
     }
 })
-
 router.get("/shows/genre/:genre", async (req, res) => {
-    let input = req.params.genre
-    let shows = await db("shows")
-    let result = []
-    for(let x=0;x<shows.length;x++) {
-        let meta = await db("metadata").where({SID: shows[x].ID})
-        if(meta[0] != undefined) {
-            let genres = strToArr(meta[0].genres)
-            for(let y=0;y<genres.length;y++) {
-                if(genres[y].toLowerCase() == input.toLowerCase()) {
-                    let currentshow = await db("shows").where({ID:meta[0].SID})
-                    meta[0].title = currentshow[0].title
-                    meta[0].genres = genres
-                    meta[0].actors = strToArr(meta[0].actors)
-                    meta[0].producers = strToArr(meta[0].producers)
-                    meta[0].directors = strToArr(meta[0].directors)
-                    meta[0].authors = strToArr(meta[0].authors)
-                    found=true
-                    result.push(meta[0])
-                }
-            }
-        }
+    let limit
+    if(req.query.limit == undefined) {
+        limit = 100
     }
-    res.json(result)
+    else {
+        limit = req.query.limit
+    }
+    let input = req.params.genre
+    let meta = await db("metadata").where("genres", "like", `%${input}%`).limit(limit)
+    for(let x=0; x<meta.length; x++) {
+        let s = await db("shows").where({ID:meta[x].SID})
+        meta[x].title = s[0].title
+        meta[x].genres = strToArr(meta[x].genres)
+        meta[x].actors = strToArr(meta[x].actors)
+        meta[x].producers = strToArr(meta[x].producers)
+        meta[x].directors = strToArr(meta[x].directors)
+        meta[x].authors = strToArr(meta[x].authors)
+    }
+    res.json(meta)
 })
+
+router.get("/shows/list/:UID", async (req, res) => {
+    const UID = req.params.UID
+
+    const watchlist = await db("watchlist").where({UID: UID}).orderBy("TIMESTAMP", "desc")
+
+    let dispatch = []
+
+    for (showWatched of watchlist) {
+        var show = await db("shows").where({ID: showWatched.SID})
+        show = show[0]
+
+        var metadata = await db("metadata")
+        .where({SID: show.ID})
+        .select("cover", "genres")
+
+        metadata = metadata[0]
+
+        show.cover = metadata.cover
+        show.genres = strToArr(metadata.genres)
+
+        dispatch.push(show)
+    }
+
+    res.end(JSON.stringify(dispatch))
+})
+
+
+router.get("/shows/latest/:UID", async (req, res) => {
+    const UID = req.params.UID
+
+    const watched = await db("showswatched").where({UID: UID}).orderBy("TIMESTAMP", "desc")
+
+    let dispatch = []
+
+    for (showWatched of watched) {
+        var show = await db("shows").where({ID: showWatched.SID})
+        show = show[0]
+
+        var metadata = await db("metadata")
+        .where({SID: show.ID})
+        .select("cover", "genres")
+
+        metadata = metadata[0]
+
+        show.cover = metadata.cover
+        show.genres = strToArr(metadata.genres)
+
+        dispatch.push(show)
+    }
+
+    res.end(JSON.stringify(dispatch))
+})
+
+//POST
+
+router.post("/shows/list/add", async (req, res) => {
+    const data = req.body
+    const timestamp = Date.now();
+    
+    let resp = await db("watchlist").where({SID:data.SID,UID:data.UID})
+    if(resp.length == 0) {
+        await db("watchlist").insert({UID:data.UID,SID:data.SID,TIMESTAMP:timestamp})
+    }
+    else if(resp.length == 1) {
+        await db("watchlist").where({UID:data.UID,SID:data.SID}).update({TIMESTAMP:timestamp})
+    }
+
+    res.end("done")
+})
+
+
+
+router.post("/shows/latest/add", async (req, res) => {
+    const data = req.body
+    const timestamp = Date.now();
+    
+    let resp = await db("showswatched").where({SID:data.SID,UID:data.UID})
+    if(resp.length == 0) {
+        await db("showswatched").insert({UID:data.UID,SID:data.SID,TIMESTAMP:timestamp})
+    }
+    else if(resp.length == 1) {
+        await db("showswatched").where({UID:data.UID,SID:data.SID}).update({TIMESTAMP:timestamp})
+    }
+
+    res.end("done")
+})
+
 
 
 module.exports = router

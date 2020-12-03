@@ -1,45 +1,64 @@
 <template>
-    <div class="genres">
-        <div class="genre" v-for="genre in shows.genres" :key="genre.length">
-            <h2 class="genreName">{{genre.title}}</h2>
+    <div class="selection">
+        <div class="selectionWatched" v-if="data.watched.length != 0">
+            <h2>Kürzlich angesehen</h2>
             <p class="swipeRight" @click="swipe">></p>
             <p class="swipeLeft"  @click="swipe">&lt;</p>
             <div class="showWrapper">
-            <div class="show" v-for="show in genre" :key="show.length" @click="openShow()" :id=show.SID>
-                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/proxy/M6EzbRlGY17V5U8_3ijVqh2Z8GwzUl4W62HZ6jYbEFsQWlr1GGC8CofYPrsmVcYawFGjb4xPHsCqIxBOIRHP0Oltu3a0GRuMU_HghMFMfVJ9mBKjwuS6QFtwwRrkYgdyWYAM3Q';">
-                <div class="overview">
+                <div class="show" v-for="show in data.watched" :key="show.ID" :id=show.ID @click="openShow()">
+                    <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/proxy/M6EzbRlGY17V5U8_3ijVqh2Z8GwzUl4W62HZ6jYbEFsQWlr1GGC8CofYPrsmVcYawFGjb4xPHsCqIxBOIRHP0Oltu3a0GRuMU_HghMFMfVJ9mBKjwuS6QFtwwRrkYgdyWYAM3Q';">
+                    <div class="overview">
                     <p class="showTitle">{{show.title}}</p>
                     <div class="showTag" v-for="tag in show.genres" :key="tag">
                         <p>{{tag}}</p>
                     </div>
                 </div>
+                </div>
             </div>
         </div>
-    </div>
+        <div class="selectionList" v-if="data.list.length != 0">
+            <h2>Meine Liste</h2>
+            <p class="swipeRight" @click="swipe">></p>
+            <p class="swipeLeft"  @click="swipe">&lt;</p>
+            <div class="showWrapper">
+                <div class="show" v-for="show in data.list" :key="show.ID" :id=show.ID @click="openShow()">
+                    <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/proxy/M6EzbRlGY17V5U8_3ijVqh2Z8GwzUl4W62HZ6jYbEFsQWlr1GGC8CofYPrsmVcYawFGjb4xPHsCqIxBOIRHP0Oltu3a0GRuMU_HghMFMfVJ9mBKjwuS6QFtwwRrkYgdyWYAM3Q';">
+                    <div class="overview">
+                    <p class="showTitle">{{show.title}}</p>
+                    <div class="showTag" v-for="tag in show.genres" :key="tag">
+                        <p>{{tag}}</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { reactive } from 'vue'
 export default {
-    name: "Genres",
+    name: "Selection",
 
     setup(props, context) {
+        const data = reactive({watched: [], list: []})
+
         const host = "http://bstoapp.staging.it-tf.ch/api/"
-        const shows = reactive({genres: {}})
-        const showID = reactive({value: "ddd"})
 
-        async function loadShows() {
-            var genres = await fetch(host + "genres")
-            genres = await genres.json()
+        async function initSelection() {
 
-            for (let i = 0; i < genres.length; i++) {
-                let genre = genres[i]
+            const token = localStorage.jwt
+            const user = decodeToken(token)
 
-                let response = await fetch(host + `shows/genre/${genre}`)
-                shows.genres[genre] = await response.json()
-                shows.genres[genre].title = genre
-            }
+            const responseLatest = await fetch(host + `shows/latest/${user.id}`)
+            const showsLatest = await responseLatest.json()
+            data.watched = showsLatest
+
+            const responseList = await fetch(host + `shows/list/${user.id}`)
+            const showsList = await responseList.json()
+            data.list = showsList
+
+            console.log(data);
         }
 
         function openShow() {
@@ -50,6 +69,7 @@ export default {
             }
 
             addLatest(target.id)
+            console.log(target.id);
             context.emit('newshow', target.id)
         }
 
@@ -76,10 +96,11 @@ export default {
             return payload
         }
 
-        loadShows()
-        return {shows, showID, openShow}
-    },
 
+        initSelection()
+
+        return {data, openShow}
+    },
     methods: {
         swipe(event) {
             const showContainer = event.target.parentElement.childNodes[3]
@@ -107,31 +128,11 @@ export default {
 </script>
 
 <style scoped>
-    .genres {
-        width: 100%;
-        min-height: 100vh;
-        padding-top: 20px;
-    }
-
-    .addWatchlist {
-        float: right;
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    .addWatchlist:hover {
-        transform: scale(1.1);
-    }
-
-    h2 {
+     h2 {
         padding-top: 15px;
         padding-left: 5px;
         position: relative;
         font-weight: 400;
-    }
-
-    .genre {
-        position: relative;
     }
 
     .swipeRight {
@@ -198,6 +199,7 @@ export default {
         box-shadow: 0px 3px 10px var(--shadow);
         cursor: pointer;
         position: relative;
+        display: inline-block;
     }
 
     .overview {

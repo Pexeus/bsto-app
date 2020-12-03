@@ -1,14 +1,67 @@
 <template>
-  <Genres/>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+  </head>
+
+  <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
+
+  <Header v-if="isLoggedIn.status"/>
+  <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
+  <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
+  <Player v-if="isLoggedIn.status" :showID="showID"/>
+  <Genres v-if="isLoggedIn.status"  @newshow="openPlayer($event)"/>
 </template>
 
 <script>
+
+import Header from "./components/Header"
+import Player from "./components/Player"
 import Genres from './components/Genres'
+import Search from "./components/Search"
+import Login from "./components/Login"
+import Selection from "./components/Selection"
+
+import { reactive } from 'vue'
 
 export default {
   name: 'App',
   components: {
+    Login,
+    Header,
+    Player,
+    Selection,
+    Search,
     Genres
+  },
+
+  setup() {
+    const showID = reactive({value: ""})
+    const isLoggedIn = reactive({status:localStorage.jwt})
+
+    function openPlayer(id) {
+      showID.value = id
+    }
+
+    function decodeToken(token) {
+      let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
+      payload = JSON.parse(Buffer.from(payload, 'base64').toString())
+      return payload
+    }
+
+    function loggedin(token) {
+      if(token) {
+        isLoggedIn.status = true
+        let decoded = decodeToken(token)
+
+        console.log(decoded);
+        // decoded token
+      }
+    }
+    
+
+    return {showID, openPlayer, loggedin, isLoggedIn}
   }
 }
 </script>
@@ -23,13 +76,96 @@ export default {
   font-family: Roboto;
   border-collapse: collapse;
   transition: ease-in-out .3s;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  color: var(--white);
+  outline: none;
+}
+
+:root {
+  --dark: #15202b;
+  --mid: #173750;
+  --bright: #009bf9;
+  --white: #f1faff;
+  --shadow: #0d151d;
 }
 
 *::-webkit-scrollbar {
   display: none;
 }
 
-body {
-  background-color:#394867;
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--white);
+  opacity: .4; /* Firefox */
+  font-weight: 300;
 }
+
+body {
+  background-color: var(--dark);
+}
+
+
+/* ICONS */
+.gg-play-list-add {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    transform: scale(var(--ggs,1.2));
+    width: 12px;
+    height: 6px;
+    border-top: 0 solid transparent;
+    border-bottom: 2px solid transparent;
+    box-shadow:
+        inset 0 -2px 0,
+        -2px 4px 0 -2px,
+        0 -2px 0 0
+}
+.gg-play-list-add::after,
+.gg-play-list-add::before {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background: currentColor;
+    top: 6px;
+    right: -8px
+}
+.gg-play-list-add::before {
+    width: 2px;
+    height: 10px;
+    top: 2px;
+    right: -4px
+}
+
+.gg-play-list-check {
+    color: var(--bright);
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    transform: scale(var(--ggs,1.2));
+    width: 12px;
+    height: 6px;
+    border-top: 0 solid transparent;
+    border-bottom: 2px solid transparent;
+    box-shadow:
+        inset 0 -2px 0,
+        -2px 4px 0 -2px,
+        0 -2px 0 0
+}
+.gg-play-list-check::after {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    width: 5px;
+    height: 8px;
+    border-right: 2px solid;
+    border-bottom: 2px solid;
+    transform: rotate(45deg);
+    top: 2px;
+    right: -4px
+}
+
 </style>

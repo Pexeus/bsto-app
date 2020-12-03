@@ -1,5 +1,9 @@
 <template>
     <div class="playerContainer" @click="closePlayer()">
+        <div class="loader">
+            <h3>Lade Episoden...</h3>
+            <i class="gg-spinner-alt"></i>
+        </div>
         <div class="player">
             <div class="left">
                 <div class="media">
@@ -8,12 +12,16 @@
                 <div class="info" v-if="data.show.info != undefined">
                     <h1 class="showTitle">{{data.show.info.title}}</h1>
                     <div class="year">
-                        <p>{{data.show.info.fromYear}}</p><p v-if="data.show.info.toYear != 0">- {{data.show.info.toYear}}</p>
+                        <p>{{data.show.info.fromYear}}</p><p v-if="data.show.info.toYear != 0"> - {{data.show.info.toYear}}</p>
                     </div>
                     <div class="genres" >
                         <div class="genreTag" v-for="tag in data.show.info.genres" :key="tag">
                             <p>{{tag}}</p>
                         </div>
+                    </div>
+                    <div class="addWatchlist" @click="addPlaylist()">
+                        <i v-if="!data.show.info.inWatchlist" class="gg-play-list-add"></i>
+                        <i v-if="data.show.info.inWatchlist" class="gg-play-list-check"></i>
                     </div>
                     <p class="description">{{data.show.info.desc}}</p>
                     <div class="actors" v-if="data.show.info.actors[0] != `undefined`">
@@ -79,8 +87,19 @@ export default {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         watch(() => props.showID.value, async () => {
-            const response = await fetch(host + `episodes/${props.showID.value}`)
+            loadShow() 
+        })
+
+        async function loadShow() {
+            document.getElementsByClassName("playerContainer")[0].style.display = "block"
+
+            const token = localStorage.jwt
+            const user = decodeToken(token)
+
+            const response = await fetch(host + `episodes/${props.showID.value}?UID=${user.id}`)
             const show = await response.json()
+
+            console.log(show);
 
             let playerActive = false
 
@@ -101,24 +120,47 @@ export default {
             }
 
             data.show = show
-            console.log(data);
 
             seasonNr.value = 0
 
             const iframe = document.getElementById("mediaFrame")
             iframe.addEventListener("load", () => {
+                document.getElementsByClassName("player")[0].style.display = "block"
+                document.getElementsByClassName("loader")[0].style.display = "none"
+
+
                 const width = event.target.offsetWidth
 
                 event.target.style.height = width * 0.56 + "px"
 
                 const infos = document.getElementsByClassName("info")[0]
-                console.log(infos);
-
                 infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
             })
+        }
 
-            document.getElementsByClassName("playerContainer")[0].style.display = "block"
-        })
+        function addPlaylist() {
+            const token = localStorage.jwt
+            const user = decodeToken(token)
+
+            let fetchOptions = {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({UID: user.id, SID: Number(props.showID.value)})
+            }
+
+            fetch(host + "shows/list/add", fetchOptions).then(resp => {
+                console.log(resp);
+                loadShow()
+            })
+        }
+
+        function decodeToken(token) {
+            let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
+            payload = JSON.parse(Buffer.from(payload, 'base64').toString())
+            return payload
+        }
 
         function setMediaSource(url) {
             const vivoCode = url.split("https://vivo.sx/")[1]
@@ -127,12 +169,14 @@ export default {
 
         function closePlayer() {
             if (event.target.className == "playerContainer") {
+                data.show = {}
+
                 document.getElementsByClassName("playerContainer")[0].style.display = "none"
                 player.source = ""
             }
         }
 
-        return {data, seasonNr, player, setMediaSource, closePlayer}
+        return {data, seasonNr, player, setMediaSource, closePlayer, addPlaylist}
     },
     mounted(){
 
@@ -141,21 +185,59 @@ export default {
 </script>
 
 <style scoped>
+    .addWatchlist {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .addWatchlist:hover {
+        transform: scale(1.1);
+    }
+
     .playerContainer {
         width: 100%;
         height: 100vh;
         position: fixed;
         top: 0;
         left: 0;
-        background-color: rgba(0, 0, 0, 0.616);
+        background-color: rgba(0, 0, 0, 0.658);
         z-index: 100;
         text-align: center;
         display: none;
     }
 
+    .loader {
+        padding: 30px;
+        background-color: var(--dark);
+        display: inline-block;
+        border-radius: 5px;
+        margin-top: 40vh;
+        font-size: large;
+        box-shadow: 0px 3px 10px black;
+    }
+
+    .iconWrapper {
+        width: 300;
+        text-align: center;
+    }
+
+    .loader h3 {
+        display: block;
+        font-weight: 400;
+    }
+
+    .loader i {
+        margin-left: -40px;
+        padding-bottom: 40px;
+        padding-top: 25px;
+    }
+
     .player {
         padding: 30px;
-        background-color: #394867;
+        background-color: var(--mid);
         display: inline-block;
         border-radius: 5px;
         margin-left: 5%;
@@ -163,9 +245,10 @@ export default {
         margin-top: 5vh;
         margin-bottom: 5vh;
         height: calc(100vh - 10vh);
-        color: white;
         text-align: left;
         border-radius: 5px;
+        display: none;
+        box-shadow: 0px 3px 10px black;
     }
 
     .media {
@@ -185,9 +268,51 @@ export default {
         vertical-align: top;
     }
 
+    .episodes {
+        display: inline-block;
+        width: 50%;
+        vertical-align: top;
+        overflow-y: scroll;
+        max-height: 100%;
+    }
+
     .info {
         overflow-y: scroll;
-        vertical-align: top;
+        position: relative;
+    }
+
+    @media only screen and (max-width: 1000px) {
+        .left {
+            width: 100%;
+            vertical-align: top;
+        }
+
+        .media {
+            position: sticky;
+            top: 0;
+            border-radius: 0;
+        }
+
+        iframe {
+            border-radius: 0;
+        }
+
+        .episodes {
+            width: 100%;
+            height: auto;
+            overflow: scroll;
+        }
+
+        .player {
+            overflow: scroll;
+            padding: 0px;
+            margin: 0;
+            height: 100%;
+        }
+
+        .info {
+            margin: 5px;
+        }
     }
 
     .showTitle {
@@ -209,12 +334,8 @@ export default {
         display: inline;
     }
 
-    .episodes {
-        display: inline-block;
-        width: 50%;
-        height: 100%;
-        vertical-align: top;
-        overflow-y: scroll;
+    .season {
+        width: 100%;
     }
 
     .season h2{
@@ -227,12 +348,13 @@ export default {
         padding: 10px;
         margin: 5px;
         font-size: large;
-        box-shadow: 0px 0px 2px #1e2738;
+        box-shadow: 0px 0px 2px var(--shadow);
         cursor: pointer;
+        border-radius: 5px;
     }
 
     .episode:hover {
-        background-color:  #1e273856;
+        background-color:  var(--bright);
     }
 
     .genres {
@@ -241,11 +363,12 @@ export default {
     }
 
     .genreTag{
-        background-color: white;
+        background-color: var(--bright);
         border-radius: 18px;
         color: #394867;
         display: inline-block;
-        margin: 3px;
+        margin-right: 6px;
+        margin-bottom: 6px;
         font-weight: bold;
         padding: 4px;
         padding-left: 8px;
@@ -260,5 +383,29 @@ export default {
         display: inline-block;
         margin: 3px;
         margin-top: 6px;
+    }
+
+    @keyframes spinneralt {
+    0% { transform: rotate(0deg) }
+    to { transform: rotate(359deg) }
+    }
+    .gg-spinner-alt {
+        transform: scale(var(--ggs,1))
+    }
+    .gg-spinner-alt,
+    .gg-spinner-alt::before {
+        box-sizing: border-box;
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 40px
+    }
+    .gg-spinner-alt::before {
+        content: "";
+        position: absolute;
+        border-radius: 100px;
+        animation: spinneralt 1s cubic-bezier(.6,0,.4,1) infinite;
+        border: 4px solid transparent;
+        border-top-color: var(--bright);
     }
 </style>
