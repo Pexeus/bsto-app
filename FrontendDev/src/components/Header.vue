@@ -11,8 +11,7 @@
             </div>
         </div>
         <div class="userMenu">
-            <p><i @click="openUser()" class="gg-profile"></i></p>
-            <p @click="logOut()">Logout</p>
+            <p @click="showUserPage()"><i class="gg-profile"></i></p>
         </div>
     </div>
 </template>
@@ -46,15 +45,6 @@ export default {
             console.log(headerData);
         }
 
-        function logOut() {
-            let decodedToken = decodeToken(localStorage.jwt)
-            console.log(decodedToken);
-            localStorage.removeItem("jwt")
-            
-
-            location.reload()
-        }
-
         function decodeToken(token) {
             let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
             console.log(payload);
@@ -64,12 +54,11 @@ export default {
             return payload
         }
 
-        function openUser() {
-            console.log("opening user")
-            context.emit("showuserpage",{test: true})
+        function showUserPage() {
+            context.emit("userpageactive", {status:true})
         }
 
-        return {logOut, openUser}
+        return { headerData, showUserPage}
     }
 }
 </script>
