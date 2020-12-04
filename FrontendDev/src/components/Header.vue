@@ -1,8 +1,8 @@
 <template>
     <div class="header">
         <div class="goTo">
-            <p class="selector selectorText">Meine Auswahl</p>
-            <p class="selector selectorText">Suche</p>
+            <p class="selector selectorText" @click="scrollTop()">Meine Auswahl</p>
+            <p class="selector selectorText" @click="scrollTop()">Suche</p>
             <div class="selector genresOpen">
                 <p class="selectorText">Genres</p>
                 <div class="genresDropdown" v-if="headerData.genres != undefined">
@@ -37,6 +37,10 @@ export default {
                 header.classList.remove("headerFloat")
             }
         })
+
+        function scrollTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
 
         function goToGenre(genre) {
             const target = document.getElementById("genre_" + genre)
