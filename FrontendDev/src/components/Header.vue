@@ -13,7 +13,10 @@
             </div>
         </div>
         <div class="userMenu">
-            <p @click="showUserPage()"><i class="gg-profile"></i></p>
+            <div @click="showUserPage()" class="showUser">
+                <i class="gg-profile"></i>
+                <p>User</p>
+            </div>
         </div>
     </div>
 </template>
@@ -25,7 +28,7 @@ export default {
 
     setup(props, context) {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
-        const headerData = reactive({genres: []})
+        const headerData = reactive({genres: [], user: {}})
 
         document.addEventListener("scroll", ()=> {
             const header = document.getElementsByClassName("header")[0]
@@ -60,6 +63,10 @@ export default {
             console.log(headerData);
         }
 
+        function loadUserData() {
+
+        }
+
         function decodeToken(token) {
             let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
             console.log(payload);
@@ -73,6 +80,7 @@ export default {
             context.emit("userpageactive", {status:true})
         }
         loadGenres()
+        loadUserData()
         return { showUserPage, headerData, goToGenre, scrollTop}
     }
 }
@@ -182,16 +190,27 @@ export default {
     .userMenu {
         display: flex;
         max-width: 50%;
-        width: 300px;
+        width: 150px;
         justify-content: flex-end;
+        align-items: center;
     }
 
-    .userMenu p {
-        display: inline-block;
-        margin-right: 25px;
-        opacity: .8;
+    .showUser {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         cursor: pointer;
-        font-weight: bold;
+        height: 100%;
+        padding: 10px;
+    }
+
+    .showUser:hover {
+        background-color: var(--mid);
+    }
+
+    .showUser * {
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
 </style>
