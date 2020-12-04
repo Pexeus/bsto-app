@@ -127,16 +127,19 @@ export default {
 
             const iframe = document.getElementById("mediaFrame")
             iframe.addEventListener("load", () => {
-                document.getElementsByClassName("player")[0].style.display = "block"
-                document.getElementsByClassName("loader")[0].style.display = "none"
+                if (data.show.info != undefined) {
+                    console.log("iframe ready!");
+                
+                    document.getElementsByClassName("player")[0].style.display = "block"
+                    document.getElementsByClassName("loader")[0].style.display = "none"
 
+                    const width = event.target.offsetWidth
 
-                const width = event.target.offsetWidth
+                    event.target.style.height = width * 0.56 + "px"
 
-                event.target.style.height = width * 0.56 + "px"
-
-                const infos = document.getElementsByClassName("info")[0]
-                infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
+                    const infos = document.getElementsByClassName("info")[0]
+                    infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
+                }
             })
         }
 
@@ -165,7 +168,6 @@ export default {
         }
 
         function setMediaSource(url) {
-
             const vivoCode = url.split("https://vivo.sx/")[1]
             player.source = "https://vivo.sx/embed/" + vivoCode
         }
@@ -197,6 +199,9 @@ export default {
 
                 document.getElementsByClassName("playerContainer")[0].style.display = "none"
                 player.source = ""
+                
+                document.getElementsByClassName("player")[0].style.display = "none"
+                document.getElementsByClassName("loader")[0].style.display = "inline-block"
             }
         }
 

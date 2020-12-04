@@ -122,6 +122,11 @@ export default {
 
     .goTo .selectorText {
         line-height: 50px;
+        opacity: .8;
+    }
+
+    .goTo .selectorText:hover {
+        opacity: 1;
     }
 
     .genresOpen:hover .genresDropdown {
