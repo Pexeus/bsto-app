@@ -1,18 +1,25 @@
 <template>
-    <div class="userWrapper">
+    <div id="wrapper" class="userWrapper" @click="closeComponent()">
         <div class="user">
-            <h1>Keko</h1>
+            <h1>{{user.data.name}}</h1>
             <div class="settings">
                 <div class="pw s">
                     <h2>Passwort ändern</h2>
-                    <input id="oldPW" type="text" placeholder="Aktuelles Passwort">
+                    <input id="oldPw" type="password" placeholder="Aktuelles Passwort">
                     <div class="new">
                         <input id="newPw" type="password" placeholder="Neues Passwort">
                         <input id="newPwConfirm" type="password" placeholder="Neues Passwort bestätigen">
                     </div>
-                    <button id="changePW">Ändern</button>
+                    <button id="changePW" @click="changePassword()">Ändern</button>
                 </div>
-                <div class="logout s"><button id="logout" @click="logout()">Abmelden</button></div>
+                <div class="logout s" >
+                    <div @click="logout()" class="logoutwrapper">
+                        <div class="imgwrapper">
+                            <i class="gg-log-out"></i>
+                        </div>
+                        <p>Abmelden</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -21,8 +28,12 @@
 import { reactive } from 'vue'
 export default {
     name: "User",
-    setup() {
+    setup(props, context) {
         const user = reactive({data:{name: "", perm: "test"}})
+
+        let decodedToken = decodeToken(localStorage.jwt)
+        user.data.name = decodedToken.name
+
 
 
         function logout() {
@@ -39,7 +50,33 @@ export default {
             payload = JSON.parse(Buffer.from(payload, 'base64').toString())
             return payload
         }
-        return {logout, decodeToken}
+        function closeComponent() {
+            if(event.target.id == "wrapper") {
+                context.emit("userpageclosed", {status:false})
+            }
+        
+        }
+        async function changePassword() {
+            let obj = {
+                old: document.getElementById("oldPw").value,
+                new: document.getElementById("newPw").value,
+                conf: document.getElementById("newPwConfirm").value
+            }
+            if(obj.old == "" || obj.new == "" || obj.conf == "") {
+                alert("Bitte alle Werte einfügen")
+            }
+            else {
+                let opt = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":"application/json"
+                    },
+                    body: obj
+                }
+
+            }
+        }
+        return {logout, decodeToken, user, changePassword, closeComponent}
     }
 }
 </script>
@@ -55,9 +92,18 @@ export default {
 }
 .user {
     background: var(--dark);
-    padding: 50px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 50px;
+    padding-top: 30px;
     display: inline-block;
     margin-top: 20vh;
+    box-shadow: 0px 3px 10px rgb(14, 14, 14);
+    border-radius: 5px;
+}
+.settings {
+    height: 100%;
+    position: relative;
 }
 .settings button {
     background: var(--mid);
@@ -70,16 +116,23 @@ export default {
     width:100%;
     text-align: left;
 }
+.user h2 {
+    font-size: 12pt;
+    font-weight: 400;
+    text-align: left;
+}
 .settings input {
+    border: 1px solid var(--shadow);
     border-radius: 5px;
     background: var(--brightdark);
-    border:0;
-    width: calc(100%-4vh);
+    float:left;
+    width: calc(100%-20px);
     padding: 10px;
-    margin: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
-.new {
-    margin-top: 10px;
+.pw button {
+    float:left;
 }
 #changePW {
     justify-content: flex-end;
@@ -90,5 +143,36 @@ export default {
     display:inline-block;
     width:50%;
     text-align: center;
+}
+.logout {
+    vertical-align: top;
+    padding-top: 50px;
+}
+.logoutwrapper {
+    background:var(--mid);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    position: relative;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 5px;
+}
+.logoutwrapper:hover > p {
+    color: var(--bright);
+}
+.logoutwrapper:hover > div > i {
+    color: var(--bright);
+}
+.logoutwrapper * {
+    display: block;
+}
+.imgwrapper {
+    margin-left: calc(50% - 6px);
+    height: 50px;
+    margin-top: 10px;
+}
+.imgwrapper i {
+    transform: scale(2);
 }
 </style>
