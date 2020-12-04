@@ -32,10 +32,20 @@ export default {
             }
 
             const response = await fetch(host + "login", fetchOptions)
-            const token = await response.json()
-            
-            localStorage.setItem("jwt", token)
-            context.emit("loggedin", token)
+            const loginResponse = await response.json()
+
+            if (loginResponse.username == false) {
+                alert("Benutzer nicht gefunden")
+            }
+            else if (loginResponse.password == false) {
+                alert("Falsches Passwort")
+            }
+            else {
+                let token = loginResponse
+
+                localStorage.setItem("jwt", token)
+                context.emit("loggedin", token)
+            }
         }
 
         return {loginData, login}

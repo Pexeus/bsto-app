@@ -1,7 +1,7 @@
 <template>
     <div class="genres">
         <div class="genre" v-for="genre in shows.genres" :key="genre.length">
-            <h2 class="genreName">{{genre.title}}</h2>
+            <h2 class="genreName" :id="`genre_` + genre.title">{{genre.title}}</h2>
             <div class="swipeWrapper left" @click="swipe"><i class="gg-chevron-left"></i></div>
             <div class="swipeWrapper right" @click="swipe"><i class="gg-chevron-right"></i></div>
             <div class="showWrapper">
