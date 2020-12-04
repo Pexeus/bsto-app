@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-control" content="no-cache">
@@ -11,6 +12,13 @@
   <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Player v-if="isLoggedIn.status" :showID="showID"/>
+=======
+  <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
+
+  <Header v-if="isLoggedIn.status"/>
+  <Player v-if="isLoggedIn.status" :showID="showID"/>
+  <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
+>>>>>>> 0a5116a36c7237f4396fe7c0f2a51d900f3ed625
   <Genres v-if="isLoggedIn.status"  @newshow="openPlayer($event)"/>
 </template>
 
@@ -21,7 +29,10 @@ import Player from "./components/Player"
 import Genres from './components/Genres'
 import Search from "./components/Search"
 import Login from "./components/Login"
+<<<<<<< HEAD
 import Selection from "./components/Selection"
+=======
+>>>>>>> 0a5116a36c7237f4396fe7c0f2a51d900f3ed625
 
 import { reactive } from 'vue'
 
@@ -31,13 +42,20 @@ export default {
     Login,
     Header,
     Player,
+<<<<<<< HEAD
     Selection,
+=======
+>>>>>>> 0a5116a36c7237f4396fe7c0f2a51d900f3ed625
     Search,
     Genres
   },
 
   setup() {
+<<<<<<< HEAD
     const showID = reactive({value: ""})
+=======
+    const showID = reactive({value: "ddd"})
+>>>>>>> 0a5116a36c7237f4396fe7c0f2a51d900f3ed625
     const isLoggedIn = reactive({status:localStorage.jwt})
 
     function openPlayer(id) {
@@ -54,8 +72,11 @@ export default {
       if(token) {
         isLoggedIn.status = true
         let decoded = decodeToken(token)
+<<<<<<< HEAD
 
         console.log(decoded);
+=======
+>>>>>>> 0a5116a36c7237f4396fe7c0f2a51d900f3ed625
         // decoded token
       }
     }
@@ -102,6 +123,7 @@ export default {
 
 body {
   background-color: var(--dark);
+<<<<<<< HEAD
 }
 
 
@@ -131,6 +153,8 @@ body {
     background: currentColor;
     top: 6px;
     right: -8px
+=======
+>>>>>>> 0a5116a36c7237f4396fe7c0f2a51d900f3ed625
 }
 .gg-play-list-add::before {
     width: 2px;
