@@ -34,6 +34,25 @@ app.get("/hash/:plain", async (req, res) => {
     let result = await bcrypt.hash(req.params.plain, saltRounds)
     res.status(200).end(result)
 })
+
+app.post("/changePassword", async (req, res) => {
+    let inputs = req.body
+    let resObj = {
+        old: false,
+        newSame: false,
+        confirm: false
+    }
+    let user = await db("users").where({ID:inputs.uid})
+    let userObj  = user[0]
+    let compareOld = await bcrypt.compare(inputs.old, userObj.password)
+    resObj.old = compareOld
+
+    resObj.newSame = inputs.new == inputs.conf
+
+  
+    res.json(resObj)
+})
+
 app.post("/login", async (req, res) => {
     let input = req.body
     console.log(input);
