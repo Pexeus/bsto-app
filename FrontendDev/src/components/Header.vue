@@ -69,8 +69,7 @@ export default {
             context.emit("userpageactive", {status:true})
         }
         loadGenres()
-
-        return {logOut, openUser, headerData, goToGenre}
+        return { showUserPage, headerData, goToGenre}
     }
 }
 </script>
