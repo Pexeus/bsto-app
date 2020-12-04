@@ -4,7 +4,6 @@
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="Expires" content="-1">
   </head>
-
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
   <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>

@@ -5,7 +5,7 @@
         </div>
         <div class="results">
             <div class="show" v-for="show in data.results" :key="show.length" @click="openShow()" :id=show.ID>
-                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/proxy/M6EzbRlGY17V5U8_3ijVqh2Z8GwzUl4W62HZ6jYbEFsQWlr1GGC8CofYPrsmVcYawFGjb4xPHsCqIxBOIRHP0Oltu3a0GRuMU_HghMFMfVJ9mBKjwuS6QFtwwRrkYgdyWYAM3Q';">
+                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='../assets/noposter.jpg';">
                 <div class="overview">
                     <p class="showTitle">{{show.title}}</p>
                     <div class="showTag" v-for="tag in show.genres" :key="tag">
