@@ -45,7 +45,7 @@ export default {
         function goToGenre(genre) {
             const target = document.getElementById("genre_" + genre)
 
-            target.scrollIntoView({block: 'center', inline: 'center', behavior: "smooth"});
+            target.scrollIntoView({behavior: "smooth"});
             
             //evtl so epis
             //target.style.color = "var(--bright)"
@@ -73,7 +73,7 @@ export default {
             context.emit("userpageactive", {status:true})
         }
         loadGenres()
-        return { showUserPage, headerData, goToGenre}
+        return { showUserPage, headerData, goToGenre, scrollTop}
     }
 }
 </script>
