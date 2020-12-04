@@ -6,7 +6,7 @@
   </head>
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
-  <User v-if="userpageActive.status && isLoggedIn.status"/>
+  <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
 
   <Header v-if="isLoggedIn.status" @userpageactive="setUserPageObj($event)"/>
   <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
@@ -66,7 +66,7 @@ export default {
 
     function setUserPageObj(e) {
       console.log("event happened")
-      userpageActive.status = true
+      userpageActive.status = e.status
 
     }
     
