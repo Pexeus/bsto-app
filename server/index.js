@@ -37,19 +37,25 @@ app.get("/hash/:plain", async (req, res) => {
 
 app.post("/changePassword", async (req, res) => {
     let inputs = req.body
+    //console.log(input)
     let resObj = {
         old: false,
-        newSame: false,
-        confirm: false
+        confirm: false,
+        changed: false
     }
     let user = await db("users").where({ID:inputs.uid})
     let userObj  = user[0]
     let compareOld = await bcrypt.compare(inputs.old, userObj.password)
     resObj.old = compareOld
 
-    resObj.newSame = inputs.new == inputs.conf
+    resObj.confirm = inputs.new == inputs.conf
 
-  
+    let newHashed = await bcrypt.hash(inputs.new, saltRounds)
+
+    let change = await db("users").where({ID:inputs.uid}).update({password:newHashed})
+
+    resObj.changed = change
+
     res.json(resObj)
 })
 
