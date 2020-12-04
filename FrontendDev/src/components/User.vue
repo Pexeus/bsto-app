@@ -5,10 +5,10 @@
             <div class="settings">
                 <div class="pw s">
                     <h2>Passwort ändern</h2>
-                    <input id="oldPw" type="password" placeholder="Aktuelles Passwort">
+                    <input id="oldPw" type="password" placeholder="Aktuelles Passwort...">
                     <div class="new">
-                        <input id="newPw" type="password" placeholder="Neues Passwort">
-                        <input id="newPwConfirm" type="password" placeholder="Neues Passwort bestätigen">
+                        <input id="newPw" type="password" placeholder="Neues Passwort...">
+                        <input id="newPwConfirm" type="password" placeholder="Neues Passwort bestätigen...">
                     </div>
                     <button id="changePW" @click="changePassword()">Ändern</button>
                 </div>
@@ -34,7 +34,7 @@ export default {
         let decodedToken = decodeToken(localStorage.jwt)
         user.data.name = decodedToken.name
 
-
+        document.querySelector("body").style.overflowY = "hidden"
 
         function logout() {
             let decodedToken = decodeToken(localStorage.jwt)
@@ -53,6 +53,7 @@ export default {
         function closeComponent() {
             if(event.target.id == "wrapper") {
                 context.emit("userpageclosed", {status:false})
+                document.querySelector("body").style.overflowY = "scroll"
             }
         
         }
@@ -113,10 +114,10 @@ export default {
 }
 .user {
     background: var(--dark);
-    padding-left: 50px;
-    padding-right: 50px;
-    padding-bottom: 50px;
-    padding-top: 30px;
+    padding-left: 100px;
+    padding-right: 100px;
+    padding-bottom: 80px;
+    padding-top: 60px;
     display: inline-block;
     margin-top: 20vh;
     box-shadow: 0px 3px 10px rgb(14, 14, 14);
@@ -167,7 +168,7 @@ export default {
 }
 .logout {
     vertical-align: top;
-    padding-top: 50px;
+    padding-top: 30px;
 }
 .logoutwrapper {
     background:var(--mid);

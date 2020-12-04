@@ -88,6 +88,8 @@ export default {
 
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
+        
+
         function scrollToSeason() {
             const seasonNr = event.target.value.split(" ")[1]
 
@@ -99,6 +101,7 @@ export default {
         }
 
         watch(() => props.showID.value, async () => {
+            document.querySelector("body").style.overflowY = "hidden"
             loadShow() 
         })
 
@@ -212,6 +215,8 @@ export default {
                 
                 document.getElementsByClassName("player")[0].style.display = "none"
                 document.getElementsByClassName("loader")[0].style.display = "inline-block"
+
+                document.querySelector("body").style.overflowY = "scroll"
             }
         }
 
