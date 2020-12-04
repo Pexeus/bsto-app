@@ -30,7 +30,7 @@ export default {
     name: "User",
     setup(props, context) {
         const user = reactive({data:{name: "", perm: "test"}})
-
+        const host = "http://bstoapp.staging.it-tf.ch/"
         let decodedToken = decodeToken(localStorage.jwt)
         user.data.name = decodedToken.name
 
@@ -58,6 +58,7 @@ export default {
         }
         async function changePassword() {
             let obj = {
+                uid: decodedToken.id,
                 old: document.getElementById("oldPw").value,
                 new: document.getElementById("newPw").value,
                 conf: document.getElementById("newPwConfirm").value
@@ -71,9 +72,29 @@ export default {
                     headers: {
                         "Content-Type":"application/json"
                     },
-                    body: obj
+                    body: JSON.stringify(obj)
                 }
 
+                //console.log(opt);
+
+                let resp = await fetch(host + "changePassword", opt)
+                let json = await resp.json()
+                
+                // current password wrong
+                if(json.old == false) {
+                    alert("Aktuelles Passwort nicht korrekt")
+                }
+                // new passwords not matching
+                else if(json.confirm == false) {
+                    alert("Neue Passwörter stimmen nicht überein")
+                }
+                // error while inserting into DB
+                else if(json.changed == 0) {
+                    alert("Fehler beim ersetzen des Passworts")
+                }
+                else if (json.old == true && json.confirm == true && json.changed == 1) {
+                    context.emit("userpageclosed", {status:false})
+                }
             }
         }
         return {logout, decodeToken, user, changePassword, closeComponent}
