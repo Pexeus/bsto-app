@@ -54,6 +54,10 @@ export default {
             if(event.target.id == "wrapper") {
                 context.emit("userpageclosed", {status:false})
 
+                document.getElementById("oldPw").value =  ""
+                document.getElementById("newPw").value =  ""
+                document.getElementById("newPwConfirm").value =  ""
+
                 document.querySelector("body").style.overflowY = "scroll"
             }
         
