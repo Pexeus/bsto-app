@@ -104,6 +104,7 @@ export default {
                     alert("Fehler beim ersetzen des Passworts")
                 }
                 else if (json.old == true && json.confirm == true && json.changed == 1) {
+                    document.querySelector("body").style.overflowY = "scroll"
                     context.emit("userpageclosed", {status:false})
                 }
             }
