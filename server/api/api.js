@@ -29,8 +29,6 @@ router.get("/episodes/:sid", async (req, res) => {
     var UID = req.query.UID
     var SID = req.params.sid
 
-    console.log(UID);
-
     // convert string arrays { one;two;three; } to arrays [one, two, three]
     meta[0].actors = strToArr(meta[0].actors)
     meta[0].producers = strToArr(meta[0].producers)
@@ -61,6 +59,16 @@ router.get("/episodes/:sid", async (req, res) => {
         // loop through episodes array
         for(let x=0;x<episodes.length;x++) {
             season_obj.episodes.push(episodes[x])
+
+            const watchedCheck = await db("episodeswatched")
+                .where({UID: UID, EID: episodes[x].ID})
+
+            if (watchedCheck.length > 0) {
+                episodes[x].watched = true
+            }
+            else {
+                episodes[x].watched = false
+            }
         }
         result.seasons.push(season_obj)
     }
@@ -247,6 +255,28 @@ router.post("/shows/latest/add", async (req, res) => {
     }
 
     res.end("done")
+})
+
+router.post("/episodes/watched/add", async (req, res) =>{
+    const query = req.body
+    query.TIMESTAMP = Date.now();
+
+    let check = await db("episodeswatched").where({EID: query.EID, UID: query.UID})
+
+    if (check.length != 0) {
+        await db("episodeswatched")
+            .where({EID: query.EID, UID: query.UID})
+            .update({TIMESTAMP: query.TIMESTAMP})
+    }
+    else {
+        await db("episodeswatched")
+            .where({EID: query.EID, UID: query.UID})
+            .insert(query)
+    }
+
+
+
+    res.end("ok")
 })
 
 
