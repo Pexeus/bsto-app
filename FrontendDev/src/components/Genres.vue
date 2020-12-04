@@ -2,8 +2,8 @@
     <div class="genres">
         <div class="genre" v-for="genre in shows.genres" :key="genre.length">
             <h2 class="genreName">{{genre.title}}</h2>
-            <p class="swipeRight" @click="swipe">></p>
-            <p class="swipeLeft"  @click="swipe">&lt;</p>
+            <div class="swipeWrapper left" @click="swipe"><i class="gg-chevron-left"></i></div>
+            <div class="swipeWrapper right" @click="swipe"><i class="gg-chevron-right"></i></div>
             <div class="showWrapper">
             <div class="show" v-for="show in genre" :key="show.length" @click="openShow()" :id=show.SID>
                 <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/proxy/M6EzbRlGY17V5U8_3ijVqh2Z8GwzUl4W62HZ6jYbEFsQWlr1GGC8CofYPrsmVcYawFGjb4xPHsCqIxBOIRHP0Oltu3a0GRuMU_HghMFMfVJ9mBKjwuS6QFtwwRrkYgdyWYAM3Q';">
@@ -87,7 +87,9 @@ export default {
 
             let scrollValue = 0
 
-            if (target.innerHTML == "&lt;") {
+            const checkString = target.classList.toString()
+
+            if (checkString.includes("left")) {
                 scrollValue = showContainer.scrollLeft - showContainer.offsetWidth
             }
             else {
@@ -134,46 +136,37 @@ export default {
         position: relative;
     }
 
-    .swipeRight {
+    .swipeWrapper {
         position: absolute;
+        text-align: center;
+        cursor: pointer;
+        background-color: var(--shadow);
+        width: 30px;
+        height: 28vh;
+        margin-top: 17px;
+        opacity: .7;
+        z-index: 1;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .swipeWrapper i {
+        margin-top: calc(14vh - 11px);
+        display: inline-block;
+        transform: scale(1.2);
+    }
+
+    .swipeWrapper:hover {
+        opacity: .9;
+        width: 40px;
+    }
+
+    .genre .right {
         right: 0px;
-        text-align: center;
-        font-size: 20pt;
-        cursor: pointer;
-        background-color: var(--shadow);
-        width: 30px;
-        height: 28vh;
-        margin-top: 17px;
-        opacity: .7;
-        z-index: 1;
-        line-height: 28vh;
-        vertical-align: middle;
     }
 
-    .swipeRight:hover {
-        opacity: .9;
-        width: 40px;
-    }
-
-    .swipeLeft {
-        position: absolute;
+    .genre .left {
         left: 0px;
-        text-align: center;
-        font-size: 20pt;
-        cursor: pointer;
-        background-color: var(--shadow);
-        width: 30px;
-        height: 28vh;
-        margin-top: 17px;
-        opacity: .7;
-        z-index: 1;
-        line-height: 28vh;
-        vertical-align: middle;
-    }
-
-    .swipeLeft:hover {
-        opacity: .9;
-        width: 40px;
     }
 
     .showWrapper {
