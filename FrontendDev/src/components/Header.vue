@@ -6,7 +6,7 @@
             <p>Genres</p>
         </div>
         <div class="userMenu">
-            <p>Profile</p>
+            <p><i @click="openUser()" class="gg-profile"></i></p>
             <p @click="logOut()">Logout</p>
         </div>
     </div>
@@ -16,7 +16,7 @@
 export default {
     name: "Header",
 
-    setup() {
+    setup(props, context) {
         document.addEventListener("scroll", ()=> {
             const header = document.getElementsByClassName("header")[0]
 
@@ -46,7 +46,12 @@ export default {
             return payload
         }
 
-        return {logOut}
+        function openUser() {
+            console.log("opening user")
+            context.emit("showuserpage",{test: true})
+        }
+
+        return {logOut, openUser}
     }
 }
 </script>
