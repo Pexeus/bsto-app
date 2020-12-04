@@ -1,8 +1,8 @@
 <template>
     <div class="header">
         <div class="goTo">
-            <p class="selector selectorText">Meine Auswahl</p>
-            <p class="selector selectorText">Suche</p>
+            <p class="selector selectorText" @click="scrollTop()">Meine Auswahl</p>
+            <p class="selector selectorText" @click="scrollTop()">Suche</p>
             <div class="selector genresOpen">
                 <p class="selectorText">Genres</p>
                 <div class="genresDropdown" v-if="headerData.genres != undefined">
@@ -13,8 +13,7 @@
             </div>
         </div>
         <div class="userMenu">
-            <p><i @click="openUser()" class="gg-profile"></i></p>
-            <p @click="logOut()">Logout</p>
+            <p @click="showUserPage()"><i class="gg-profile"></i></p>
         </div>
     </div>
 </template>
@@ -39,10 +38,14 @@ export default {
             }
         })
 
+        function scrollTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
         function goToGenre(genre) {
             const target = document.getElementById("genre_" + genre)
 
-            target.scrollIntoView({block: 'center', inline: 'center', behavior: "smooth"});
+            target.scrollIntoView({behavior: "smooth"});
             
             //evtl so epis
             //target.style.color = "var(--bright)"
@@ -57,15 +60,6 @@ export default {
             console.log(headerData);
         }
 
-        function logOut() {
-            let decodedToken = decodeToken(localStorage.jwt)
-            console.log(decodedToken);
-            localStorage.removeItem("jwt")
-            
-
-            location.reload()
-        }
-
         function decodeToken(token) {
             let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
             console.log(payload);
@@ -75,14 +69,11 @@ export default {
             return payload
         }
 
-        function openUser() {
-            console.log("opening user")
-            context.emit("showuserpage",{test: true})
+        function showUserPage() {
+            context.emit("userpageactive", {status:true})
         }
-
         loadGenres()
-
-        return {logOut, openUser, headerData, goToGenre}
+        return { showUserPage, headerData, goToGenre, scrollTop}
     }
 }
 </script>
@@ -122,6 +113,11 @@ export default {
 
     .goTo .selectorText {
         line-height: 50px;
+        opacity: .8;
+    }
+
+    .goTo .selectorText:hover {
+        opacity: 1;
     }
 
     .genresOpen:hover .genresDropdown {

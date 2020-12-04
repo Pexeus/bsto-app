@@ -4,12 +4,11 @@
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="Expires" content="-1">
   </head>
-
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
-  <User v-if="showUserPage.status && isLoggedIn.status" @showuserpage="userpageshow($event)"/>
+  <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
 
-  <Header v-if="isLoggedIn.status"/>
+  <Header v-if="isLoggedIn.status" @userpageactive="setUserPageObj($event)"/>
   <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Player v-if="isLoggedIn.status" :showID="showID"/>
@@ -43,7 +42,7 @@ export default {
   setup() {
     const showID = reactive({value: ""})
     const isLoggedIn = reactive({status:localStorage.jwt})
-    const showUserPage = reactive({status: false})
+    const userpageActive = reactive({status: false})
 
     function openPlayer(id) {
       showID.value = id
@@ -64,20 +63,15 @@ export default {
         // decoded token
       }
     }
-    function userpageshow(e) {
-      console.log("hallo")
-      console.log(e)
-      console.log(showUserPage)
-      if(showUserPage.status == false) {
-        showUserPage.status = true
-      }
-      else {
-        showUserPage.status = false
-      }
+
+    function setUserPageObj(e) {
+      console.log("event happened")
+      userpageActive.status = e.status
+
     }
     
 
-    return {showID, openPlayer, loggedin, isLoggedIn, showUserPage, userpageshow}
+    return {showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive}
   }
 }
 </script>

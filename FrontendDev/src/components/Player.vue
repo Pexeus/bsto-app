@@ -51,14 +51,14 @@
                 </div>
             </div>
             <div class="episodes">
-                <div class="selectSeason">
+                <div class="selectSeason" @click="scrollToSeason()">
                     <select>
                         <option v-for="season in data.show.seasons" :key="season">Staffel {{parseInt(season.index) + 1}}</option>
                     </select>
                 </div>
                 <div class="seasons">
                     <div class="season" v-for="season in data.show.seasons" :key="season">
-                        <h2>Staffel {{parseInt(season.index) + 1}}</h2>
+                        <h2 :id="`season_` + (parseInt(season.index) + 1)">Staffel {{parseInt(season.index) + 1}}</h2>
                         <div class="episode" v-for="episode in season.episodes" :key="episode" @click="setMediaSource(episode.vivo_link), saveAsWatched(episode.ID)">
                             <p>{{episode.title}}</p>
                             <i v-if="episode.watched == true && episode.vivo_link.includes(`error:`) == false" class="gg-eye-alt"></i>
@@ -87,6 +87,16 @@ export default {
         const player = reactive({source: ""})
 
         const host = "http://bstoapp.staging.it-tf.ch/api/"
+
+        function scrollToSeason() {
+            const seasonNr = event.target.value.split(" ")[1]
+
+            console.log("Season " + seasonNr);
+
+            const target = document.getElementById("season_" + seasonNr)
+
+            target.scrollIntoView({block: 'center', inline: 'center', behavior: "smooth"});
+        }
 
         watch(() => props.showID.value, async () => {
             loadShow() 
@@ -127,16 +137,19 @@ export default {
 
             const iframe = document.getElementById("mediaFrame")
             iframe.addEventListener("load", () => {
-                document.getElementsByClassName("player")[0].style.display = "block"
-                document.getElementsByClassName("loader")[0].style.display = "none"
+                if (data.show.info != undefined) {
+                    console.log("iframe ready!");
+                
+                    document.getElementsByClassName("player")[0].style.display = "block"
+                    document.getElementsByClassName("loader")[0].style.display = "none"
 
+                    const width = event.target.offsetWidth
 
-                const width = event.target.offsetWidth
+                    event.target.style.height = width * 0.56 + "px"
 
-                event.target.style.height = width * 0.56 + "px"
-
-                const infos = document.getElementsByClassName("info")[0]
-                infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
+                    const infos = document.getElementsByClassName("info")[0]
+                    infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
+                }
             })
         }
 
@@ -165,7 +178,6 @@ export default {
         }
 
         function setMediaSource(url) {
-
             const vivoCode = url.split("https://vivo.sx/")[1]
             player.source = "https://vivo.sx/embed/" + vivoCode
         }
@@ -197,10 +209,13 @@ export default {
 
                 document.getElementsByClassName("playerContainer")[0].style.display = "none"
                 player.source = ""
+                
+                document.getElementsByClassName("player")[0].style.display = "none"
+                document.getElementsByClassName("loader")[0].style.display = "inline-block"
             }
         }
 
-        return {data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched}
+        return {data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
     },
     mounted(){
 
@@ -356,6 +371,30 @@ export default {
 
     p {
         display: inline;
+    }
+
+    .selectSeason {
+        position: sticky;
+        top: 0;
+        padding: 10px;
+        padding-top: 0;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: var(--dark);
+        z-index: 100;
+        text-align: right;
+    }
+
+    select {
+        border: 0;
+        background-color: var(--bright);
+        color: black;
+        cursor: pointer;
+        font-size: large;
+        padding: 5px;
+        border-radius: 5px;
+        width: 30%;
+        box-shadow: 0px 0px 3px var(--shadow);
     }
 
     .season {
