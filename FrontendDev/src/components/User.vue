@@ -10,14 +10,14 @@
                         <input id="newPw" type="password" placeholder="Neues Passwort...">
                         <input id="newPwConfirm" type="password" placeholder="Neues Passwort bestätigen...">
                     </div>
-                    <button id="changePW" @click="changePassword()">Ändern</button>
+                    <button id="changePW" @click="changePassword()">Passwort ändern</button>
                 </div>
                 <div class="logout s" >
                     <div @click="logout()" class="logoutwrapper">
                         <div class="imgwrapper">
                             <i class="gg-log-out"></i>
                         </div>
-                        <p>Abmelden</p>
+                        <p class="logouttext">Abmelden</p>
                     </div>
                 </div>
             </div>
@@ -108,7 +108,7 @@ export default {
     position: fixed;
     width: 100%;
     height: 100vh;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.658);
     z-index: 200;
     text-align: center;
 }
@@ -120,7 +120,7 @@ export default {
     padding-top: 60px;
     display: inline-block;
     margin-top: 20vh;
-    box-shadow: 0px 3px 10px rgb(14, 14, 14);
+    box-shadow: 0px 3px 10px rgb(5, 5, 5);
     border-radius: 5px;
 }
 .settings {
@@ -160,6 +160,7 @@ export default {
     justify-content: flex-end;
     display: inline-block;
     margin: 5px;
+    margin-left:0;
 }
 .s {
     display:inline-block;
@@ -179,15 +180,22 @@ export default {
     padding-top: 20px;
     padding-bottom: 20px;
     border-radius: 5px;
+    box-shadow: 0px 3px 8px var(--shadow);
 }
 .logoutwrapper:hover > p {
     color: var(--bright);
+}
+.logoutwrapper:hover {
+    box-shadow: 0px 5px 10px var(--shadow);
 }
 .logoutwrapper:hover > div > i {
     color: var(--bright);
 }
 .logoutwrapper * {
     display: block;
+}
+.logouttext {
+    box-shadow: none;
 }
 .imgwrapper {
     margin-left: calc(50% - 6px);
@@ -196,5 +204,27 @@ export default {
 }
 .imgwrapper i {
     transform: scale(2);
+}
+
+@media only screen and (max-width: 800px) {
+    .s {
+        width: 100%;
+    }
+    input {
+        width: 100%;
+    }
+    .user {
+        width:90%;
+        padding-left: 50px;
+        padding-right: 50px;
+        margin-top: 18vh;
+    }
+    .settings {
+        width:100%;
+    }
+    .user h2 {
+        width: 100%;
+    }
+    
 }
 </style>

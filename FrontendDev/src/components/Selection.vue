@@ -183,7 +183,6 @@ export default {
     .showWrapper::-webkit-scrollbar {
         display: none;
     }
-
     .show {
         height: 28vh;
         border-radius: 5px;
