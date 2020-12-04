@@ -52,10 +52,6 @@ export default {
         }
         function closeComponent() {
             if(event.target.id == "wrapper") {
-                document.getElementById("oldPw").value =  ""
-                document.getElementById("newPw").value =  ""
-                document.getElementById("newPwConfirm").value =  ""
-
                 context.emit("userpageclosed", {status:false})
 
                 document.querySelector("body").style.overflowY = "scroll"
@@ -69,6 +65,11 @@ export default {
                 new: document.getElementById("newPw").value,
                 conf: document.getElementById("newPwConfirm").value
             }
+
+            document.getElementById("oldPw").value =  ""
+            document.getElementById("newPw").value =  ""
+            document.getElementById("newPwConfirm").value =  ""
+
             if(obj.old == "" || obj.new == "" || obj.conf == "") {
                 alert("Bitte alle Werte einfügen")
             }
