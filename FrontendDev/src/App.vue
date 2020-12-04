@@ -7,6 +7,8 @@
 
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
+  <User v-if="showUserPage.status && isLoggedIn.status" @showuserpage="userpageshow($event)"/>
+
   <Header v-if="isLoggedIn.status"/>
   <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
@@ -22,6 +24,7 @@ import Genres from './components/Genres'
 import Search from "./components/Search"
 import Login from "./components/Login"
 import Selection from "./components/Selection"
+import User from "./components/User"
 
 import { reactive } from 'vue'
 
@@ -30,6 +33,7 @@ export default {
   components: {
     Login,
     Header,
+    User,
     Player,
     Selection,
     Search,
@@ -39,6 +43,7 @@ export default {
   setup() {
     const showID = reactive({value: ""})
     const isLoggedIn = reactive({status:localStorage.jwt})
+    const showUserPage = reactive({status: false})
 
     function openPlayer(id) {
       showID.value = id
@@ -59,9 +64,20 @@ export default {
         // decoded token
       }
     }
+    function userpageshow(e) {
+      console.log("hallo")
+      console.log(e)
+      console.log(showUserPage)
+      if(showUserPage.status == false) {
+        showUserPage.status = true
+      }
+      else {
+        showUserPage.status = false
+      }
+    }
     
 
-    return {showID, openPlayer, loggedin, isLoggedIn}
+    return {showID, openPlayer, loggedin, isLoggedIn, showUserPage, userpageshow}
   }
 }
 </script>
@@ -106,147 +122,4 @@ export default {
 body {
   background-color: var(--dark);
 }
-
-
-/* ICONS */
-.gg-play-list-add {
-    box-sizing: border-box;
-    position: relative;
-    display: block;
-    transform: scale(var(--ggs,1.2));
-    width: 12px;
-    height: 6px;
-    border-top: 0 solid transparent;
-    border-bottom: 2px solid transparent;
-    box-shadow:
-        inset 0 -2px 0,
-        -2px 4px 0 -2px,
-        0 -2px 0 0
-}
-.gg-play-list-add::after,
-.gg-play-list-add::before {
-    content: "";
-    display: block;
-    box-sizing: border-box;
-    position: absolute;
-    width: 10px;
-    height: 2px;
-    background: currentColor;
-    top: 6px;
-    right: -8px
-}
-.gg-play-list-add::before {
-    width: 2px;
-    height: 10px;
-    top: 2px;
-    right: -4px
-}
-
-.gg-play-list-check {
-    color: var(--bright);
-    box-sizing: border-box;
-    position: relative;
-    display: block;
-    transform: scale(var(--ggs,1.2));
-    width: 12px;
-    height: 6px;
-    border-top: 0 solid transparent;
-    border-bottom: 2px solid transparent;
-    box-shadow:
-        inset 0 -2px 0,
-        -2px 4px 0 -2px,
-        0 -2px 0 0
-}
-.gg-play-list-check::after {
-    content: "";
-    display: block;
-    box-sizing: border-box;
-    position: absolute;
-    width: 5px;
-    height: 8px;
-    border-right: 2px solid;
-    border-bottom: 2px solid;
-    transform: rotate(45deg);
-    top: 2px;
-    right: -4px
-}
-
-.gg-eye-alt {
-    position: relative;
-    display: block;
-    transform: scale(var(--ggs,1));
-    width: 24px;
-    height: 18px;
-    border-bottom-right-radius: 100px;
-    border-bottom-left-radius: 100px;
-    overflow: hidden;
-    box-sizing: border-box
-}
-.gg-eye-alt::after,
-.gg-eye-alt::before {
-    content: "";
-    display: block;
-    border-radius: 100px;
-    position: absolute;
-    box-sizing: border-box
-}
-.gg-eye-alt::after {
-    top: 2px;
-    box-shadow:
-        inset 0 -8px 0 2px,
-        inset 0 0 0 2px;
-    width: 24px;
-    height: 24px
-}
-.gg-eye-alt::before {
-    width: 8px;
-    height: 8px;
-    border: 2px solid transparent;
-    box-shadow:
-        inset 0 0 0 6px,
-        0 0 0 4px,
-        6px 0 0 0,
-        -6px 0 0 0 ;
-    bottom: 4px;
-    left: 8px
-}
-
-.gg-smile-sad {
-    box-sizing: border-box;
-    position: relative;
-    display: block;
-    transform: scale(var(--ggs,1));
-    width: 20px;
-    height: 20px;
-    border: 2px solid;
-    border-radius: 100px
-}
-.gg-smile-sad::after,
-.gg-smile-sad::before {
-    content: "";
-    display: block;
-    box-sizing: border-box;
-    position: absolute;
-    left: 4px
-}
-.gg-smile-sad::before {
-    background: currentColor;
-    box-shadow: 6px 0 0;
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    top: 5px
-}
-.gg-smile-sad::after {
-    width: 8px;
-    height: 4px;
-    border-radius: 150px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border: 2px solid;
-    border-top-color: transparent;
-    top: 9px;
-    transform: scaleY(-1)
-}
-
 </style>

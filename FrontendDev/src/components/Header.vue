@@ -1,22 +1,31 @@
 <template>
     <div class="header">
         <div class="goTo">
-            <p>Meine Auswahl</p>
-            <p>Suche</p>
-            <p>Genres</p>
+            <p class="selector">Meine Auswahl</p>
+            <p class="selector">Suche</p>
+            <div class="selector">
+                <p>Genres</p>
+                <div class="genresDropdown">
+                    <p v-for="genre in headerData.genres" :key="genre">{{genre}}</p>
+                </div>
+            </div>
         </div>
         <div class="userMenu">
-            <p>Profile</p>
+            <p><i @click="openUser()" class="gg-profile"></i></p>
             <p @click="logOut()">Logout</p>
         </div>
     </div>
 </template>
 
 <script>
+import { reactive } from 'vue'
 export default {
     name: "Header",
 
-    setup() {
+    setup(props, context) {
+        const host = "http://bstoapp.staging.it-tf.ch/api/"
+        const headerData = reactive({genres: []})
+
         document.addEventListener("scroll", ()=> {
             const header = document.getElementsByClassName("header")[0]
 
@@ -27,6 +36,15 @@ export default {
                 header.classList.remove("headerFloat")
             }
         })
+
+        async function loadGenres() {
+            var genres = await fetch(host + "genres")
+            genres = await genres.json()
+
+
+            headerData.genres = genres
+            console.log(headerData);
+        }
 
         function logOut() {
             let decodedToken = decodeToken(localStorage.jwt)
@@ -46,7 +64,12 @@ export default {
             return payload
         }
 
-        return {logOut}
+        function openUser() {
+            console.log("opening user")
+            context.emit("showuserpage",{test: true})
+        }
+
+        return {logOut, openUser}
     }
 }
 </script>
@@ -74,16 +97,29 @@ export default {
         width: 300px;
     }
 
-    .goTo p {
+    .goTo .selector {
         display: inline-block;
         flex-grow: 1;
-        opacity: .8;
         cursor: pointer;
         font-weight: bold;
     }
 
-    .header p:hover {
+    .genresDropdown {
+        position: absolute;
+        display: inline-block;
+        background-color: var(--mid);
         opacity: 1;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 5px;
+        box-shadow: 0px 3px 10px var(--shadow);
+        font-weight: 400;
+        cursor: default;
+        max-height: 300px;
+    }
+
+    .genresDropdown p {
+        display: inline-block;
     }
 
     .userMenu {
