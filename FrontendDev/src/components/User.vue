@@ -52,7 +52,12 @@ export default {
         }
         function closeComponent() {
             if(event.target.id == "wrapper") {
+                document.getElementById("oldPw").value =  ""
+                document.getElementById("newPw").value =  ""
+                document.getElementById("newPwConfirm").value =  ""
+
                 context.emit("userpageclosed", {status:false})
+
                 document.querySelector("body").style.overflowY = "scroll"
             }
         
