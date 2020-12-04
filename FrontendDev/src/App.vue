@@ -7,6 +7,8 @@
 
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
+  <User v-if="showUserPage.status && isLoggedIn.status" @showuserpage="userpageshow($event)"/>
+
   <Header v-if="isLoggedIn.status"/>
   <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
@@ -22,6 +24,7 @@ import Genres from './components/Genres'
 import Search from "./components/Search"
 import Login from "./components/Login"
 import Selection from "./components/Selection"
+import User from "./components/User"
 
 import { reactive } from 'vue'
 
@@ -30,6 +33,7 @@ export default {
   components: {
     Login,
     Header,
+    User,
     Player,
     Selection,
     Search,
@@ -39,6 +43,7 @@ export default {
   setup() {
     const showID = reactive({value: ""})
     const isLoggedIn = reactive({status:localStorage.jwt})
+    const showUserPage = reactive({status: false})
 
     function openPlayer(id) {
       showID.value = id
@@ -59,9 +64,20 @@ export default {
         // decoded token
       }
     }
+    function userpageshow(e) {
+      console.log("hallo")
+      console.log(e)
+      console.log(showUserPage)
+      if(showUserPage.status == false) {
+        showUserPage.status = true
+      }
+      else {
+        showUserPage.status = false
+      }
+    }
     
 
-    return {showID, openPlayer, loggedin, isLoggedIn}
+    return {showID, openPlayer, loggedin, isLoggedIn, showUserPage, userpageshow}
   }
 }
 </script>

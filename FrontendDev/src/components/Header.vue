@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="userMenu">
-            <p>Profile</p>
+            <p><i @click="openUser()" class="gg-profile"></i></p>
             <p @click="logOut()">Logout</p>
         </div>
     </div>
@@ -22,11 +22,9 @@ import { reactive } from 'vue'
 export default {
     name: "Header",
 
-    setup() {
-        const headerData = reactive({genres: []})
-
+    setup(props, context) {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
-
+        const headerData = reactive({genres: []})
 
         document.addEventListener("scroll", ()=> {
             const header = document.getElementsByClassName("header")[0]
@@ -66,9 +64,12 @@ export default {
             return payload
         }
 
-        loadGenres()
+        function openUser() {
+            console.log("opening user")
+            context.emit("showuserpage",{test: true})
+        }
 
-        return {logOut, headerData}
+        return {logOut, openUser}
     }
 }
 </script>
