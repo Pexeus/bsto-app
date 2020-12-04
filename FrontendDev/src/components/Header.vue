@@ -1,6 +1,7 @@
 <template>
     <div class="header">
         <div class="goTo">
+            <img src="../assets/logo.png" alt="logo" id="logo">
             <p class="selector selectorText" @click="scrollTop()">Meine Auswahl</p>
             <p class="selector selectorText" @click="scrollTop()">Suche</p>
             <div class="selector genresOpen">
@@ -87,6 +88,12 @@ export default {
 </script>
 
 <style scoped>
+    #logo {
+        height: 35px;
+        margin-right: 2vh;
+        -webkit-filter: drop-shadow(0px 1px 3px rgb(10, 10, 10));
+        filter: drop-shadow(0px 1px 3px rgb(10, 10, 10));
+    }
     .header {
         width: 100%;
         height: 50px;
