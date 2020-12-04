@@ -36,27 +36,37 @@ app.get("/hash/:plain", async (req, res) => {
 })
 app.post("/login", async (req, res) => {
     let input = req.body
+    console.log(input);
     if(input.username && input.password) {
         // username found
         let results = await db("users").where({name: input.username})
-        let passCheck = await bcrypt.compare(input.password, results[0].password)
 
-        const user = await db("users").where({name: input.username})
-        console.log(user);
+        if(results.length > 0) {
+            let passCheck = await bcrypt.compare(input.password, results[0].password)
+            const user = await db("users").where({name: input.username})
+            console.log(user);
+            console.log(passCheck);
 
-        if(passCheck == true) {
-            // password correct
-            let lifetime = 86400 * 7// 7 days (seconds)
-            let token = jwt.createToken({id: user[0].ID, name: user[0].name}, lifetime)
-            res.json(token)
+            if(passCheck == true) {
+                // password correct
+                let lifetime = 86400 * 7// 7 days (seconds)
+                let token = jwt.createToken({id: user[0].ID, name: user[0].name}, lifetime)
+                res.json(token)
+            }
+            else {
+                // wrong password
+                res.status(400).json({password:false})
+            }
         }
         else {
-            // wrong password
-            res.status(400).json({password:false})
+            // username not found
+            res.status(400).json({username:false})
         }
+
+        
     }
     else {
-        // username not found
+        // not all values given
         res.status(400).json({username:false})
     }
 })
