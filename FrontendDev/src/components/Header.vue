@@ -2,8 +2,8 @@
     <div class="header">
         <div class="goTo">
             <img src="../assets/logo.png" alt="logo" id="logo">
-            <p class="selector selectorText" @click="scrollTop()">Meine Auswahl</p>
-            <p class="selector selectorText" @click="scrollTop()">Suche</p>
+            <p class="selector selectorText" @click="scrollTo(`selection`)">Meine Auswahl</p>
+            <p class="selector selectorText" @click="scrollTo(`search`)">Suche</p>
             <div class="selector genresOpen">
                 <p class="selectorText">Genres</p>
                 <div class="genresDropdown" v-if="headerData.genres != undefined">
@@ -40,6 +40,11 @@ export default {
                 header.classList.remove("headerFloat")
             }
         })
+
+        function scrollTo(classList) {
+            const target = document.getElementsByClassName(classList)[0]
+            target.scrollIntoView({behavior: "smooth", block: "center"});
+        }
 
         function scrollTop() {
             window.scrollTo({top: 0, behavior: 'smooth'});
@@ -81,7 +86,7 @@ export default {
         }
         loadGenres()
         loadUserData()
-        return { showUserPage, headerData, goToGenre, scrollTop}
+        return { showUserPage, headerData, goToGenre, scrollTop, scrollTo}
     }
 }
 </script>
@@ -180,8 +185,8 @@ export default {
         font-weight: 400;
         display: inline-block;
         width: 33%;
-        margin-top: 6px;
-        margin-bottom: 6px;
+        margin-top: 4px;
+        margin-bottom: 4px;
         text-align: left;
         opacity: .8;
         font-size: large;

@@ -66,7 +66,7 @@ export default {
             }
 
             fetch(host + "shows/latest/add", fetchOptions).then(resp => {
-                console.log(resp);
+                console.log("added to latest");
             })
         }
 

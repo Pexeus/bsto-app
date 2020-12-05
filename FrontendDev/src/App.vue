@@ -100,6 +100,7 @@ export default {
   --mid: #173750;
   --brightmid: #0099f91e;
   --bright: #009bf9;
+  --brightLight:#0099f980;
   --white: #f1faff;
   --shadow: #0d151d;
   --lightshadow: #0f1924d8;

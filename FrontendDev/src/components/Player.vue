@@ -59,7 +59,7 @@
                 <div class="seasons">
                     <div class="season" v-for="season in data.show.seasons" :key="season">
                         <h2 :id="`season_` + (parseInt(season.index) + 1)">Staffel {{parseInt(season.index) + 1}}</h2>
-                        <div class="episode" v-for="episode in season.episodes" :key="episode" @click="setMediaSource(episode.vivo_link), saveAsWatched(episode.ID)">
+                        <div class="episode" :id="`https://vivo.sx/embed/` + episode.vivo_link.split(`https://vivo.sx/`)[1]" v-for="episode in season.episodes" :key="episode" @click="setMediaSource(episode.vivo_link), saveAsWatched(episode.ID)">
                             <p>{{episode.title}}</p>
                             <i v-if="episode.watched == true && episode.vivo_link.includes(`error:`) == false" class="gg-eye-alt"></i>
                             <i v-if="episode.vivo_link.includes(`error:`)" class="gg-smile-sad"></i>
@@ -124,12 +124,11 @@ export default {
                 for (let episode in show.seasons[season].episodes) {
                     show.seasons[season].episodes[episode].index = episode
 
-                    if (playerActive == false) { //hier watched check
+                    if (playerActive == false && show.seasons[season].episodes[episode].watched == false) { //hier watched check
                         playerActive = true
+                        const link = show.seasons[season].episodes[episode].vivo_link
 
-                        const vivoCode = show.seasons[season].episodes[episode].vivo_link.split("https://vivo.sx/")[1]
-                        
-                        player.source = "https://vivo.sx/embed/" + vivoCode
+                        setMediaSource(link)
                     }
                 }
             }
@@ -142,7 +141,18 @@ export default {
             iframe.addEventListener("load", () => {
                 if (data.show.info != undefined) {
                     console.log("iframe ready!");
-                
+
+                    //marking current episode
+                    const oldActive = document.getElementsByClassName("episodeActive")[0]
+                    if (oldActive != undefined) {
+                        oldActive.classList.remove("episodeActive")
+                    }
+                    document.getElementById(iframe.src).classList.add("episodeActive")
+
+                    //-> timeout here?
+                    document.getElementById(iframe.src).click()
+
+                    //toggling visibility of elements
                     document.getElementsByClassName("player")[0].classList.add("playerVisible")
                     document.getElementsByClassName("loader")[0].classList.remove("loaderVisible")
 
@@ -182,6 +192,7 @@ export default {
 
         function setMediaSource(url) {
             const vivoCode = url.split("https://vivo.sx/")[1]
+
             player.source = "https://vivo.sx/embed/" + vivoCode
         }
 
@@ -189,8 +200,16 @@ export default {
             const token = localStorage.jwt
             const user = decodeToken(token)
 
-            if (event.target.querySelector("i") == null && event.target.querySelector(".gg-smile-sad") == null) {
-                event.target.innerHTML += "<i class=gg-eye-alt></i>"
+            let target = event.target
+
+            while (target.tagName != "DIV") {
+                target = target.parentElement
+            }
+
+            console.log(target);
+
+            if (target.querySelector("i") == null && event.target.querySelector(".gg-smile-sad") == null) {
+                target.innerHTML += "<i class=gg-eye-alt></i>"
             }
 
             let fetchOptions = {
@@ -324,6 +343,7 @@ export default {
         width: 100%;
         vertical-align: top;
         border-radius: 5px;
+        z-index: 500;
     }
 
     iframe {
@@ -458,12 +478,19 @@ export default {
         justify-content: space-between;
     }
 
+    .episodeActive {
+        background-color: var(--brightLight);
+        padding: 20px;
+    }
+
     .episode i {
         color: lightgray;
+        float: right;
     }
 
     .episode p {
         color: lightgray;
+        display: inline-block;
     }
 
     .episode:hover {
