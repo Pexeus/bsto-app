@@ -6,8 +6,10 @@
   </head>
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
-  <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
-
+  <Suspense>
+    <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
+  </Suspense>
+  
   <Header v-if="isLoggedIn.status" @userpageactive="setUserPageObj($event)"/>
   <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>

@@ -2,6 +2,21 @@
     <div id="wrapper" class="userWrapper" @click="closeComponent()">
         <div class="user">
             <h1>{{user.data.name}}</h1>
+            <div class="stats">
+                <h3>Statistiken</h3>
+                <div class="showsSeen">
+                    <h2>{{user.data.stats.shseen}}</h2>
+                    <p>Serien angesehen</p>
+                </div>
+                <div class="episodesSeen">
+                    <h2>{{user.data.stats.epseen}}</h2>
+                    <p>Episoden angesehen</p>
+                </div>
+                <div class="favgenre">
+                    <h2>'{{user.data.stats.genre}}'</h2>
+                    <p>Lieblingsgenre</p>
+                </div>
+            </div>
             <div class="settings">
                 <div class="pw s">
                     <h2>Passwort ändern</h2>
@@ -28,13 +43,27 @@
 import { reactive } from 'vue'
 export default {
     name: "User",
-    setup(props, context) {
-        const user = reactive({data:{name: "", perm: "test"}})
+    async setup(props, context) {
+        const user = reactive({data:{name: "", perm: "test",stats:{seen:1,genre:""}}})
+
         const host = "http://bstoapp.staging.it-tf.ch/"
+        const api = "http://bstoapp.staging.it-tf.ch/api/"
+
+
         let decodedToken = decodeToken(localStorage.jwt)
+
         user.data.name = decodedToken.name
+        user.data.id = decodedToken.id
+
+        let showsseen = await getShowsSeen(user.data.id)
+        let episodesseen = await getEpisodesSeen(user.data.id)
+
+        user.data.stats.shseen = showsseen.count
+        user.data.stats.epseen = episodesseen.count
+        user.data.stats.genre = await getFavGenre(user.data.id)
 
         document.querySelector("body").style.overflowY = "hidden"
+
 
         function logout() {
             let decodedToken = decodeToken(localStorage.jwt)
@@ -61,6 +90,24 @@ export default {
                 document.querySelector("body").style.overflowY = "scroll"
             }
         
+        }
+        async function getShowsSeen(uid) {
+            let resp = await fetch(api+`shows/seen/${uid}`)
+            let result = await resp.json()
+
+            return result
+        }
+        async function getEpisodesSeen(uid) {
+            let resp = await fetch(api+`episodes/seen/${uid}`)
+            let result = await resp.json()
+
+            return result
+        }
+        async function getFavGenre(uid) {
+            let resp = await fetch(api + `genres/fav/${uid}`)
+            let result = await resp.json()
+
+            return result.fav
         }
         async function changePassword() {
             let obj = {
@@ -134,6 +181,29 @@ export default {
     box-shadow: 0px 3px 10px rgb(5, 5, 5);
     border-radius: 5px;
 }
+.stats {
+    display: block;
+}
+.stats div {
+    display: inline-block;
+    margin: 3%;
+    margin-top:5%;
+    margin-bottom:5%;
+}
+.stats h2 {
+    font-size: 22pt;
+    text-align: left;
+    color: var(--bright);
+}
+.stats h3 {
+    font-size: 12pt;
+    font-weight: 400;
+    text-align: left;
+}
+.stats p {
+    text-align: left;
+    font-size: 13px;
+}
 .settings {
     height: 100%;
     position: relative;
@@ -149,7 +219,7 @@ export default {
     width:100%;
     text-align: left;
 }
-.user h2 {
+.settings h2 {
     font-size: 12pt;
     font-weight: 400;
     text-align: left;
@@ -235,6 +305,12 @@ export default {
     }
     .user h2 {
         width: 100%;
+    }
+    .stats div {
+        display: block;
+    }
+    .stats {
+        text-align: center;
     }
     
 }
