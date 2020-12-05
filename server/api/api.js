@@ -1,9 +1,15 @@
 const express = require("express")
+const axios = require("axios")
 
 const knex = require("../db/connection")
 const db = knex.getDB()
 
 var router = express.Router()
+
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}
+
 
 const strToArr = (str) => {
     let arr = str.split(";")
@@ -279,6 +285,57 @@ router.post("/episodes/watched/add", async (req, res) =>{
     res.end("ok")
 })
 
+router.get("/shows/seen/:uid", async (req, res) => {
+    let resp = await db("showswatched").where({UID:req.params.uid}).count("ID")
+    res.json({count:resp[0]["count(`ID`)"]})
+})
 
+router.get("/episodes/seen/:uid", async (req, res) => {
+    let resp = await db("episodeswatched").where({UID:req.params.uid}).count("ID")
+    res.json({count:resp[0]["count(`ID`)"]})
+})
+
+router.get("/genres/fav/:uid", async (req, res) => {
+    let watchedShows = await db("showswatched").select("SID").where({UID:req.params.uid})
+    let allGenres = await axios.get("http://bstoapp.staging.it-tf.ch/api/genres")
+    let fav = {}
+
+    let min
+    let max
+
+    allGenres = allGenres.data
+
+    for(genre of allGenres) {
+        fav[`${genre}`] = 0
+    }
+
+    for(show of watchedShows) {
+        let id = show.SID
+        let genres = await db("metadata").select("genres").where({SID: id})
+        let showGenres = genres[0].genres.split(";")
+        let showGenresFixed = []
+        for(genre of showGenres) {
+            if(genre != "") {
+                showGenresFixed.push(genre)
+            }
+        }
+        let allKeys = Object.keys(fav)
+        min = fav[allKeys[0]]
+        max = fav[allKeys[0]]
+        for(genre of showGenresFixed) {
+            for(let x=0;x<allKeys.length;x++) {
+                if(genre == allKeys[x]) {
+                    fav[allKeys[x]] += 1
+                }
+            }
+        }
+    }
+    
+    for(let [key, value] of Object.entries(fav)) {
+        if(value < min) min = value
+        if(value > max) max = value
+    }
+    res.json({fav:getKeyByValue(fav, max)})
+})
 
 module.exports = router
