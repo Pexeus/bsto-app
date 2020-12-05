@@ -16,7 +16,6 @@
         <div class="userMenu">
             <div @click="showUserPage()" class="showUser">
                 <i class="gg-profile"></i>
-                <p>User</p>
             </div>
         </div>
     </div>
@@ -215,9 +214,9 @@ export default {
         background-color: var(--mid);
     }
 
-    .showUser * {
+    .showUser i {
         margin-left: 5px;
         margin-right: 5px;
+        transform: scale(1.2);
     }
-
 </style>

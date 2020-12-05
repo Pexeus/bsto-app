@@ -92,10 +92,9 @@ export default {
 
         function scrollToSeason() {
             const seasonNr = event.target.value.split(" ")[1]
+            const target = document.getElementById("season_" + seasonNr)
 
             console.log("Season " + seasonNr);
-
-            const target = document.getElementById("season_" + seasonNr)
 
             target.scrollIntoView({block: 'center', inline: 'center', behavior: "smooth"});
         }
@@ -106,7 +105,8 @@ export default {
         })
 
         async function loadShow() {
-            document.getElementsByClassName("playerContainer")[0].style.display = "block"
+            document.getElementsByClassName("playerContainer")[0].classList.add("playerContainerVisible")
+            document.getElementsByClassName("loader")[0].classList.add("loaderVisible")
 
             const token = localStorage.jwt
             const user = decodeToken(token)
@@ -143,8 +143,8 @@ export default {
                 if (data.show.info != undefined) {
                     console.log("iframe ready!");
                 
-                    document.getElementsByClassName("player")[0].style.display = "block"
-                    document.getElementsByClassName("loader")[0].style.display = "none"
+                    document.getElementsByClassName("player")[0].classList.add("playerVisible")
+                    document.getElementsByClassName("loader")[0].classList.remove("loaderVisible")
 
                     const width = event.target.offsetWidth
 
@@ -207,14 +207,14 @@ export default {
         }
 
         function closePlayer() {
-            if (event.target.className == "playerContainer") {
+            if (event.target.className.includes("playerContainer")) {
                 data.show = {}
 
-                document.getElementsByClassName("playerContainer")[0].style.display = "none"
+                document.getElementsByClassName("playerContainer")[0].classList.remove("playerContainerVisible")
                 player.source = ""
                 
-                document.getElementsByClassName("player")[0].style.display = "none"
-                document.getElementsByClassName("loader")[0].style.display = "inline-block"
+                document.getElementsByClassName("player")[0].classList.remove("playerVisible")
+                document.getElementsByClassName("loader")[0].classList.remove("loaderVisible")
 
                 document.querySelector("body").style.overflowY = "scroll"
             }
@@ -222,9 +222,6 @@ export default {
 
         return {data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
     },
-    mounted(){
-
-    }
 }
 </script>
 
@@ -250,17 +247,38 @@ export default {
         background-color: rgba(0, 0, 0, 0.658);
         z-index: 100;
         text-align: center;
-        display: none;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .playerContainerVisible {
+        visibility: visible;
+        opacity: 1;
     }
 
     .loader {
-        padding: 30px;
         background-color: var(--dark);
-        display: inline-block;
         border-radius: 5px;
-        margin-top: 40vh;
         font-size: large;
         box-shadow: 0px 3px 10px black;
+        margin-top: 40vh;
+        transform: scale(1);
+        height: auto;
+        padding: 30px;
+        position: absolute;
+        visibility: hidden;
+        display: inline-block;
+        z-index: -100;
+        transform: scale(.9);
+    }
+
+    .loaderVisible {
+        position: relative;
+        opacity: 1;
+        z-index: 100;
+        visibility: visible;
+        transform: scale(1);
+        margin-right: 0;
     }
 
     .iconWrapper {
@@ -280,9 +298,8 @@ export default {
     }
 
     .player {
-        padding: 30px;
+        padding: 15px;
         background-color: var(--dark);
-        display: inline-block;
         border-radius: 5px;
         margin-left: 5%;
         margin-right: 5%;
@@ -291,8 +308,16 @@ export default {
         height: calc(100vh - 10vh);
         text-align: left;
         border-radius: 5px;
-        display: none;
         box-shadow: 0px 3px 10px black;
+        opacity: 0;
+        transform: scale(.7);
+        visibility: hidden;
+    }
+
+    .playerVisible {
+        opacity: 1;
+        transform: scale(1);
+        visibility: visible;
     }
 
     .media {
