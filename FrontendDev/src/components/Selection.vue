@@ -57,8 +57,6 @@ export default {
             const responseList = await fetch(host + `shows/list/${user.id}`)
             const showsList = await responseList.json()
             data.list = showsList
-
-            console.log(data);
         }
 
         function openShow() {
@@ -69,7 +67,6 @@ export default {
             }
 
             addLatest(target.id)
-            console.log(target.id);
             context.emit('newshow', target.id)
         }
 
@@ -86,7 +83,7 @@ export default {
             }
 
             fetch(host + "shows/latest/add", fetchOptions).then(resp => {
-                console.log(resp);
+                
             })
         }
 

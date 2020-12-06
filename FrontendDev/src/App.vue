@@ -46,6 +46,8 @@ export default {
     const isLoggedIn = reactive({status:localStorage.jwt})
     const userpageActive = reactive({status: false})
 
+
+
     function openPlayer(id) {
       showID.value = id
     }

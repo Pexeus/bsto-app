@@ -179,7 +179,6 @@ export default {
             }
 
             fetch(host + "shows/list/add", fetchOptions).then(resp => {
-                console.log(resp);
                 loadShow()
             })
         }
@@ -206,8 +205,6 @@ export default {
                 target = target.parentElement
             }
 
-            console.log(target);
-
             if (target.querySelector("i") == null && event.target.querySelector(".gg-smile-sad") == null) {
                 target.innerHTML += "<i class=gg-eye-alt></i>"
             }
@@ -221,7 +218,7 @@ export default {
             }
 
             fetch(host + "episodes/watched/add", fetchOptions).then(resp => {
-                console.log(resp);
+                
             })
         }
 
@@ -292,7 +289,6 @@ export default {
     }
 
     .loaderVisible {
-        position: relative;
         opacity: 1;
         z-index: 100;
         visibility: visible;
@@ -311,7 +307,7 @@ export default {
     }
 
     .loader i {
-        margin-left: -40px;
+        display: inline-block;
         padding-bottom: 40px;
         padding-top: 25px;
     }
@@ -529,24 +525,24 @@ export default {
     @keyframes spinneralt {
     0% { transform: rotate(0deg) }
     to { transform: rotate(359deg) }
-    }
-    .gg-spinner-alt {
-        transform: scale(var(--ggs,1))
-    }
-    .gg-spinner-alt,
-    .gg-spinner-alt::before {
-        box-sizing: border-box;
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        height: 40px
-    }
-    .gg-spinner-alt::before {
-        content: "";
-        position: absolute;
-        border-radius: 100px;
-        animation: spinneralt 1s cubic-bezier(.6,0,.4,1) infinite;
-        border: 4px solid transparent;
-        border-top-color: var(--bright);
-    }
+}
+.gg-spinner-alt {
+    transform: scale(var(--ggs,1.5))
+}
+.gg-spinner-alt,
+.gg-spinner-alt::before {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    width: 20px;
+    height: 20px
+}
+.gg-spinner-alt::before {
+    content: "";
+    position: absolute;
+    border-radius: 100px;
+    animation: spinneralt 1s cubic-bezier(.6,0,.4,1) infinite;
+    border: 3px solid transparent;
+    border-top-color: var(--bright)
+}
 </style>

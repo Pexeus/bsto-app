@@ -1,7 +1,15 @@
 <template>
     <div class="search">
         <div class="searchbar">
-            <input type="text" class="SearchInput" @keydown="requestResults()" id="queryInput" placeholder="Suche...">
+            <div class="inputWrapper">
+                <div v-if="data.status == `loading`" class="iconWrapper">
+                    <i class="gg-spinner"></i>
+                </div>
+                <div v-if="data.status == `idle`" class="searchButton">
+                    <i @click="requestResults()" class="gg-search"></i>
+                </div>
+                <input type="text" class="SearchInput" @keydown="requestResults()" id="queryInput" placeholder="Suche...">
+            </div>
         </div>
         <div class="results">
             <div class="show" v-for="show in data.results" :key="show.length" @click="openShow()" :id=show.ID>
@@ -25,7 +33,7 @@ export default {
 
     setup(props, context) {
         const host = "http://bstoapp.staging.it-tf.ch/api/"
-        const data = reactive({results: []})
+        const data = reactive({results: [], status: "idle"})
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,6 +41,9 @@ export default {
 
         async function requestResults() {
             await sleep(100)
+
+            //activating loader
+            data.status = "loading"
 
             const query = document.getElementById("queryInput").value
 
@@ -47,6 +58,8 @@ export default {
             else {
                 data.results = []
             }
+
+            data.status = "idle"
         }
 
         function openShow() {
@@ -94,6 +107,42 @@ export default {
         text-align: center;
         padding-top: 5vh;
         padding-bottom: 5vh;
+    }
+
+    .inputWrapper {
+        display: inline-block;
+        position: relative;
+    }
+
+    .inputWrapper .iconWrapper {
+        position: absolute;
+        right: 0;
+        padding: 12.5px;
+    }
+
+    .gg-spinner {
+        transform: scale(1.1);
+    }
+
+    .searchButton {
+        position: absolute;
+        right: 0;
+        border-radius: 5px;
+        height: 43px;
+        width: 43px;
+        margin-top: 1px;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .searchButton:hover {
+        background-color: var(--brightLight);
+    }
+
+    .gg-search {
+        margin-top: 2px;
+        display: inline-block;
     }
 
     input {
