@@ -23,6 +23,9 @@
                         <i v-if="!data.show.info.inWatchlist" class="gg-play-list-add"></i>
                         <i v-if="data.show.info.inWatchlist" class="gg-play-list-check"></i>
                     </div>
+                    <div v-if="myWindow.width <= 1000" @click="closePlayer()" class="exitButton">
+                        <i class="gg-close"></i>
+                    </div>
                     <p class="description">{{data.show.info.desc}}</p>
                     <div class="actors" v-if="data.show.info.actors[0] != `undefined`">
                         <h3>Schauspieler:</h3>
@@ -85,10 +88,18 @@ export default {
         const data = reactive({show: {}})
         const seasonNr = reactive({value: 0})
         const player = reactive({source: ""})
+        const myWindow = reactive({width:0})
+
 
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
-        
+        window.onload = () => {
+            myWindow.width = window.innerWidth
+        }
+
+        window.onresize = () => {
+            myWindow.width = window.innerWidth
+        }
 
         function scrollToSeason() {
             const seasonNr = event.target.value.split(" ")[1]
@@ -223,7 +234,7 @@ export default {
         }
 
         function closePlayer() {
-            if (event.target.className.includes("playerContainer")) {
+            if (event.target.className.includes("playerContainer") || event.target.className.includes("gg-close")) {
                 data.show = {}
 
                 document.getElementsByClassName("playerContainer")[0].classList.remove("playerContainerVisible")
@@ -236,12 +247,19 @@ export default {
             }
         }
 
-        return {data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
+        return {myWindow, data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
     },
 }
 </script>
 
 <style scoped>
+    .exitButton {
+        position: absolute;
+        top: 3px;
+        right: 30px;
+        cursor: pointer;
+        padding: 10px;
+    }
     .addWatchlist {
         position: absolute;
         top: 10px;
