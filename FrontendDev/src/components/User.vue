@@ -106,7 +106,7 @@ export default {
             let resp = await fetch(api + `genres/fav/${uid}`)
             let result = await resp.json()
 
-            return result.fav
+            return result[result.length-1]
         }
         async function changePassword() {
             let obj = {
