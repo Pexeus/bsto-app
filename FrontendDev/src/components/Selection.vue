@@ -42,7 +42,6 @@ export default {
 
     setup(props, context) {
         const data = reactive({watched: [], list: []})
-
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         async function initSelection() {
@@ -102,6 +101,8 @@ export default {
         swipe(event) {
             const showContainer = event.target.parentElement.childNodes[3]
             const target = event.target
+
+            console.log(showContainer);
 
             let scrollValue = 0
 

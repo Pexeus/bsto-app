@@ -65,7 +65,6 @@ export default {
 
 
             headerData.genres = genres
-            console.log(headerData);
         }
 
         function loadUserData() {

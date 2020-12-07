@@ -23,6 +23,9 @@
                         <i v-if="!data.show.info.inWatchlist" class="gg-play-list-add"></i>
                         <i v-if="data.show.info.inWatchlist" class="gg-play-list-check"></i>
                     </div>
+                    <div v-if="myWindow.width <= 1000" @click="closePlayer()" class="exitButton">
+                        <i class="gg-close"></i>
+                    </div>
                     <p class="description">{{data.show.info.desc}}</p>
                     <div class="actors" v-if="data.show.info.actors[0] != `undefined`">
                         <h3>Schauspieler:</h3>
@@ -85,10 +88,17 @@ export default {
         const data = reactive({show: {}})
         const seasonNr = reactive({value: 0})
         const player = reactive({source: ""})
+        const myWindow = reactive({width:0})
 
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
-        
+        window.onload = () => {
+            myWindow.width = window.innerWidth
+        }
+
+        window.onresize = () => {
+            myWindow.width = window.innerWidth
+        }
 
         function scrollToSeason() {
             const seasonNr = event.target.value.split(" ")[1]
@@ -116,25 +126,33 @@ export default {
 
             console.log(show);
 
-            let playerActive = false
+            //setting first episode as default
+            let link = show.seasons[0].episodes[0].vivo_link
 
+            //timestamp check
+            let timestampCheck = 0
+
+            //looking for last watched episode
             for (let season in show.seasons) {
                 show.seasons[season].index = season
 
                 for (let episode in show.seasons[season].episodes) {
                     show.seasons[season].episodes[episode].index = episode
 
-                    if (playerActive == false && show.seasons[season].episodes[episode].watched == false) { //hier watched check
-                        playerActive = true
-                        const link = show.seasons[season].episodes[episode].vivo_link
+                    let currentEpisode = show.seasons[season].episodes[episode]
 
-                        setMediaSource(link)
+                    console.log(currentEpisode);
+                    
+                    if (currentEpisode.watchedAt > timestampCheck) {
+                        link = currentEpisode.vivo_link
+                        timestampCheck = currentEpisode.watchedAt
                     }
                 }
             }
 
+            //setting media src and defining data for vue
+            setMediaSource(link)
             data.show = show
-
             seasonNr.value = 0
 
             const iframe = document.getElementById("mediaFrame")
@@ -223,7 +241,7 @@ export default {
         }
 
         function closePlayer() {
-            if (event.target.className.includes("playerContainer")) {
+            if (event.target.className.includes("playerContainer") || event.target.className.includes("gg-close")) {
                 data.show = {}
 
                 document.getElementsByClassName("playerContainer")[0].classList.remove("playerContainerVisible")
@@ -236,12 +254,19 @@ export default {
             }
         }
 
-        return {data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
+        return {myWindow, data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
     },
 }
 </script>
 
 <style scoped>
+    .exitButton {
+        position: absolute;
+        top: 3px;
+        right: 30px;
+        cursor: pointer;
+        padding: 10px;
+    }
     .addWatchlist {
         position: absolute;
         top: 10px;
@@ -286,6 +311,8 @@ export default {
         display: inline-block;
         z-index: -100;
         transform: scale(.9);
+        width: 300px;
+        left: calc(50% - 150px);
     }
 
     .loaderVisible {
@@ -293,7 +320,8 @@ export default {
         z-index: 100;
         visibility: visible;
         transform: scale(1);
-        margin-right: 0;
+        left: calc(50% - 150px);
+        z-index: -100;
     }
 
     .iconWrapper {

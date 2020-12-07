@@ -10,11 +10,14 @@
     <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
   </Suspense>
   
-  <Header v-if="isLoggedIn.status" @userpageactive="setUserPageObj($event)"/>
-  <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
-  <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
-  <Player v-if="isLoggedIn.status" :showID="showID"/>
-  <Genres v-if="isLoggedIn.status"  @newshow="openPlayer($event)"/>
+  <Loader v-if="!contentLoaded.status"/>
+
+  <Header v-if="isLoggedIn.status && contentLoaded.status" @userpageactive="setUserPageObj($event)"/>
+  <Search v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)"/>
+  <Quickbar v-if="isLoggedIn.status" @newshow="openPlayer($event)" @contentloaded="loadContent($event)"/>
+  <Selection v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)"/>
+  <Player v-if="isLoggedIn.status && contentLoaded.status" :showID="showID"/>
+  <Genres v-if="isLoggedIn.status && contentLoaded.status"  @newshow="openPlayer($event)"/>
 </template>
 
 <script>
@@ -26,6 +29,8 @@ import Search from "./components/Search"
 import Login from "./components/Login"
 import Selection from "./components/Selection"
 import User from "./components/User"
+import Quickbar from "./components/Quickbar"
+import Loader from "./components/Loader"
 
 import { reactive } from 'vue'
 
@@ -38,15 +43,16 @@ export default {
     Player,
     Selection,
     Search,
-    Genres
+    Genres,
+    Quickbar,
+    Loader
   },
 
   setup() {
     const showID = reactive({value: ""})
     const isLoggedIn = reactive({status:localStorage.jwt})
     const userpageActive = reactive({status: false})
-
-
+    const contentLoaded = reactive({status:false})
 
     function openPlayer(id) {
       showID.value = id
@@ -73,9 +79,13 @@ export default {
       userpageActive.status = e.status
 
     }
+
+    function loadContent(e) {
+      contentLoaded.status = true
+    }
     
 
-    return {showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive}
+    return {loadContent, showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive, contentLoaded}
   }
 }
 </script>

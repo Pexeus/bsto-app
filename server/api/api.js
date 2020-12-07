@@ -330,11 +330,8 @@ router.get("/genres/fav/:uid", async (req, res) => {
             }
         }
     }
+    // sort object keys by values => last entry of array is favorite genre
     keysSorted = Object.keys(fav).sort(function(a,b){return fav[a]-fav[b]})
-    for(let [key, value] of Object.entries(fav)) {
-        if(value < min) min = value
-        if(value > max) max = value
-    }
     res.json(keysSorted)
 })
 
