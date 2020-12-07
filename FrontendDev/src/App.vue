@@ -9,12 +9,14 @@
   <Suspense>
     <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
   </Suspense>
-  
-  <Header v-if="isLoggedIn.status" @userpageactive="setUserPageObj($event)"/>
-  <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
-  <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
-  <Player v-if="isLoggedIn.status" :showID="showID"/>
-  <Genres v-if="isLoggedIn.status"  @newshow="openPlayer($event)"/>
+
+  <Loader v-if="contentLoaded.status == false"/>
+
+  <Header v-if="isLoggedIn.status && contentLoaded.status" @userpageactive="setUserPageObj($event)"/>
+  <Search v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)"/>
+  <Selection v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)"/>
+  <Player v-if="isLoggedIn.status && contentLoaded.status" :showID="showID"/>
+  <Genres v-if="isLoggedIn.status && contentLoaded.status"  @newshow="openPlayer($event)"/>
 </template>
 
 <script>
@@ -26,6 +28,7 @@ import Search from "./components/Search"
 import Login from "./components/Login"
 import Selection from "./components/Selection"
 import User from "./components/User"
+import Loader from "./components/Loader"
 
 import { reactive } from 'vue'
 
@@ -38,15 +41,19 @@ export default {
     Player,
     Selection,
     Search,
-    Genres
+    Genres,
+    Loader
   },
 
   setup() {
     const showID = reactive({value: ""})
     const isLoggedIn = reactive({status:localStorage.jwt})
     const userpageActive = reactive({status: false})
+    const contentLoaded = reactive({status:false})
 
-
+    setTimeout(() => {
+      contentLoaded.status = true
+    },1000)
 
     function openPlayer(id) {
       showID.value = id
@@ -75,7 +82,7 @@ export default {
     }
     
 
-    return {showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive}
+    return {showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive, contentLoaded}
   }
 }
 </script>

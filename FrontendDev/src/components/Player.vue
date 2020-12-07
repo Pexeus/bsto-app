@@ -90,7 +90,6 @@ export default {
         const player = reactive({source: ""})
         const myWindow = reactive({width:0})
 
-
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         window.onload = () => {
