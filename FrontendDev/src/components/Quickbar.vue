@@ -22,9 +22,7 @@
                 </div>
             </div>
             <div class="progressBar">
-                    <div class="progress" :style="{width: show.progress + `%`}">
-                        <p>{{show.progress}}%</p>
-                    </div>
+                    <div class="progress" :style="{width: show.progress + `%`}"></div>
             </div>
         </div>
     </div>
@@ -53,7 +51,7 @@ export default {
             //fetching shows
             const responseLatest = await fetch(host + `shows/latest/${user.id}`)
             let showsLatest = await responseLatest.json()
-            showsLatest = showsLatest.slice(0, 4)
+            showsLatest = showsLatest.slice(0, 8)
 
             for (let show of showsLatest) {
                 const response = await fetch(host + `episodes/${show.ID}?UID=${user.id}`)
@@ -154,16 +152,29 @@ export default {
 </script>
 
 <style scoped>
+    .quickbar {
+        display: flex;
+        width: 100%;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        position: relative;
+        background-color: red;
+        height: 35vh;
+        flex: 0 0 500px;
+    }
+
     .quickbarVisible {
         visibility: visible;
         transform: scale(1);
         opacity: 1;
     }
+
     .quickbarHidden {
         visibility: hidden;
         transform: scale(.9);
         opacity: 0.2;
     }
+
     .show {
         height: 33vh;
         background-color: var(--mid);
@@ -172,6 +183,7 @@ export default {
         margin: 10px;
         box-shadow: 0px 0px 10px var(--shadow);
         position: relative;
+        width: 500px;
     }
 
     .imgWrapper {
@@ -250,8 +262,8 @@ export default {
         background-color: var(--bright);
         font-size: small;
         font-weight: bold;
-        padding-top: 2px;
-        padding-bottom: 2px;
+        padding-top: 3px;
+        padding-bottom: 3px;
         border-bottom-left-radius: 5px;
         padding-left: 2px;
     }
