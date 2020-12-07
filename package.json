@@ -1,0 +1,19 @@
+{
+  "name": "bsto-app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "cd ./server/ && npm i && cd .. && cd ./FrontendDev/ && npm i && npm run build && cd .. && rm -r ./client && cp -r ./FrontendDev/dist/ ./client && pm2 restart bstoapp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pexeus/bsto-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pexeus/bsto-app/issues"
+  },
+  "homepage": "https://github.com/Pexeus/bsto-app#readme"
+}
