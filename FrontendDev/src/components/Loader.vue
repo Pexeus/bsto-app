@@ -25,7 +25,7 @@ export default {
         transform: scale(1.5);
         display: inline-block;
         color:var(--bright);
-        filter: drop-shadow(0px 1px 1px var(--shadow))
+        filter: drop-shadow(0px 1px 1px var(--shadow));
     }
     img {
         width: 20vh;
