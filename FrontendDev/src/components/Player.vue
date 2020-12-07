@@ -311,6 +311,8 @@ export default {
         display: inline-block;
         z-index: -100;
         transform: scale(.9);
+        width: 300px;
+        left: calc(50% - 150px);
     }
 
     .loaderVisible {
@@ -318,7 +320,8 @@ export default {
         z-index: 100;
         visibility: visible;
         transform: scale(1);
-        margin-right: 0;
+        left: calc(50% - 150px);
+        z-index: -100;
     }
 
     .iconWrapper {

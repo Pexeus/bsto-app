@@ -102,6 +102,8 @@ export default {
             const showContainer = event.target.parentElement.childNodes[3]
             const target = event.target
 
+            console.log(showContainer);
+
             let scrollValue = 0
 
             const checkString = target.classList.toString()

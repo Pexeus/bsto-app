@@ -1,30 +1,38 @@
 <template>
-    <div class="quickbar">
-        <div class="show" v-for="show in data.shows" :key="show">
-            <div class="imgWrapper">
-                <img :src="show.cover" alt="">
-                <div class="continue">
-                    <i class="gg-play-button-o"></i>
-                </div>
-            </div>
-            <div class="overview">
-                <h2 class="showTitle">{{show.title}}</h2>
-
-                <div class="status">
-                    <p class="currentEpisode">{{`Staffel ${show.current.season}, Episode ${show.current.episode}`}}</p>
-                    <p class="currentTitle">{{show.current.title}}</p>
-                </div>
-
-                <div class="tags">
-                     <div class="showTag" v-for="tag in show.genres" :key="tag">
-                        <p>{{tag}}</p>
+    <div class="quickbarWrapper">
+        <div class="swipeWrapper left" @click="swipe()"><i class="gg-chevron-left"></i></div>
+        <div class="swipeWrapper right" @click="swipe()"><i class="gg-chevron-right"></i></div>
+        <div class="quickbar">
+            <div class="show" v-for="show in data.shows" :key="show">
+                <div class="imgWrapper" :id="show.ID" @click="openShow()">
+                    <img :src="show.cover" alt="">
+                    <div class="continue">
+                        <i class="gg-play-button-o"></i>
                     </div>
                 </div>
-            </div>
+                <div class="overview">
+                    <h2 class="showTitle">{{show.title}}</h2>
+
+                    <div class="status">
+                        <p class="currentEpisode">{{`Staffel ${show.current.season}, Episode ${show.current.episode}`}}</p>
+                        <p class="currentTitle">{{show.current.title}}</p>
+                    </div>
+
+                    <div class="completion">
+                        <p>{{show.progress}}% Abgeschlossen</p>
+                    </div>
+
+                    <div class="tags">
+                        <div class="showTag" v-for="tag in show.genres" :key="tag">
+                            <p>{{tag}}</p>
+                        </div>
+                    </div>
+                </div>
             <div class="progressBar">
-                    <div class="progress" :style="{width: show.progress + `%`}"></div>
+                <div class="progress" :style="{width: show.progress + `%`}"></div>
             </div>
         </div>
+    </div>
     </div>
 </template>
 
@@ -51,7 +59,7 @@ export default {
             //fetching shows
             const responseLatest = await fetch(host + `shows/latest/${user.id}`)
             let showsLatest = await responseLatest.json()
-            showsLatest = showsLatest.slice(0, 8)
+            showsLatest = showsLatest.slice(0, 4)
 
             for (let show of showsLatest) {
                 const response = await fetch(host + `episodes/${show.ID}?UID=${user.id}`)
@@ -124,6 +132,33 @@ export default {
             context.emit('newshow', target.id)
         }
 
+        function swipe() {
+            const target = event.target
+
+            console.log(target)
+
+            const showContainer = target.parentElement.childNodes[2]
+
+            let scrollValue = 0
+
+            const checkString = target.classList.toString()
+
+            if (checkString.includes("left")) {
+                scrollValue = showContainer.scrollLeft - showContainer.offsetWidth
+            }
+            else {
+                scrollValue = showContainer.scrollLeft + showContainer.offsetWidth
+            }
+
+            const options = {
+                top: 0,
+                left: scrollValue,
+                behavior: 'smooth'
+            }
+
+            showContainer.scroll(options);
+        }
+
         function addLatest(showID) {
             const token = localStorage.jwt
             const user = decodeToken(token)
@@ -148,21 +183,58 @@ export default {
         }
 
         initQuickbar()
-        return {data, openShow}
+        return {data, openShow, swipe}
     }
 }
 </script>
 
 <style scoped>
+    .quickbarWrapper {
+        width: 100%;
+    }
+
     .quickbar {
         display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
         overflow-x: scroll;
         overflow-y: hidden;
         position: relative;
-        background-color: red;
         height: 35vh;
-        flex: 0 0 500px;
+    }
+
+    .swipeWrapper {
+        position: absolute;
+        text-align: center;
+        cursor: pointer;
+        background-color: var(--shadow);
+        width: 30px;
+        height: 33vh;
+        margin-top: 10px;
+        opacity: .7;
+        z-index: 1;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .swipeWrapper i {
+        margin-top: calc(14vh - 11px);
+        display: inline-block;
+        transform: scale(1.2);
+    }
+
+    .swipeWrapper:hover {
+        opacity: .9;
+        width: 40px;
+    }
+
+    .quickbarWrapper .right {
+        right: 0px;
+    }
+
+    .quickbarWrapper .left {
+        left: 0px;
     }
 
     .quickbarVisible {
@@ -185,21 +257,33 @@ export default {
         margin: 10px;
         box-shadow: 0px 0px 10px var(--shadow);
         position: relative;
-        width: 500px;
+        flex: none;
     }
 
     .imgWrapper {
         display: inline-block;
         height: 100%;
         position: relative;
+        overflow-x: hidden;
     }
 
     .show img {
         height: 100%;
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
-        filter: brightness(.7);
         cursor: pointer;
+        display: inline-block;
+    }
+
+    .imgWrapper:hover img{
+        transform: scale(1.05);
+        filter: brightness(.7);
+    }
+
+    .imgWrapper:hover .continue {
+        visibility: visible;
+        transform: scale(1);
+        opacity: 1;
     }
 
     .overview {
@@ -213,12 +297,25 @@ export default {
 
     .status {
         margin-top: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         font-size: large;
     }
 
     .currentEpisode {
         font-weight: bold;
+    }
+
+    .completion {
+        color: var(--bright);
+        display: inline-block;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .completion p {
+        display: inline-block;
+        font-size: 15pt;
+        text-align: center;
     }
 
     .continue {
@@ -232,6 +329,9 @@ export default {
         justify-content: center;
         align-content: center;
         cursor: pointer;
+        visibility: hidden;
+        transform: scale(.8);
+        opacity: 0;
     }
 
     .continue i {
@@ -258,6 +358,7 @@ export default {
         left: 0;
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
+        clip-path: inset(0 0 0 0 round 0px 0px 5px 0px);
     }
 
     .progress {
