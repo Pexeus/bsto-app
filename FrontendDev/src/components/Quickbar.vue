@@ -21,6 +21,11 @@
                     </div>
                 </div>
             </div>
+            <div class="progressBar">
+                    <div class="progress" :style="{width: show.progress + `%`}">
+                        <p>{{show.progress}}%</p>
+                    </div>
+            </div>
         </div>
     </div>
 </template>
@@ -50,8 +55,10 @@ export default {
                 const showData = await response.json()
 
                 let currentEpisode = getCurrentEpisode(showData.seasons)
-                let completion = getCompletion(showData.seasons)
                 show.current = currentEpisode
+
+                const progress = getCompletion(showData.seasons)
+                show.progress = progress
                 
                 data.shows.push(show)
             }
@@ -72,7 +79,7 @@ export default {
                 }
             }
 
-            console.log(watched, episodes);
+            return (Math.round(watched / episodes * 100))
         } 
 
         function getCurrentEpisode(seasons) {
@@ -171,6 +178,7 @@ export default {
         vertical-align: top;
         height: 100%;
         max-width: 250px;
+        position: relative;
     }
 
     .status {
@@ -210,5 +218,25 @@ export default {
         padding: 3px;
         padding-left: 6px;
         padding-right: 6px;
+    }
+
+    .progressBar {
+        width: 100%;
+        background-color: var(--lightbright);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    .progress {
+        background-color: var(--bright);
+        font-size: small;
+        font-weight: bold;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        border-bottom-left-radius: 5px;
+        padding-left: 2px;
     }
 </style>
