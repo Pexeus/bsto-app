@@ -70,7 +70,9 @@ router.get("/episodes/:sid", async (req, res) => {
                 .where({UID: UID, EID: episodes[x].ID})
 
             if (watchedCheck.length > 0) {
+                console.log(watchedCheck[0].TIMESTAMP);
                 episodes[x].watched = true
+                episodes[x].watchedAt = watchedCheck[0].TIMESTAMP
             }
             else {
                 episodes[x].watched = false
