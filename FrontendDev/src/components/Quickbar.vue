@@ -34,6 +34,11 @@ export default {
     setup(props, context) {
         const data = reactive({shows: []})
         const host = "http://bstoapp.staging.it-tf.ch/api/"
+        
+        setTimeout(() => {
+            document.getElementsByClassName("quickbar")[0].classList.remove("quickbarVisible")
+            document.getElementsByClassName("quickbar")[0].classList.add("quickbarHidden")
+        },10)
 
         async function initQuickbar() {
             //getting user data
@@ -55,7 +60,9 @@ export default {
                 
                 data.shows.push(show)
             }
-
+            context.emit("contentloaded",true)
+            document.getElementsByClassName("quickbar")[0].classList.remove("quickbarHidden")
+            document.getElementsByClassName("quickbar")[0].classList.add("quickbarVisible")
             console.log(data);
         }
 
@@ -134,13 +141,22 @@ export default {
         }
 
         initQuickbar()
-
         return {data, openShow}
     }
 }
 </script>
 
 <style scoped>
+    .quickbarVisible {
+        visibility: visible;
+        transform: scale(1);
+        opacity: 1;
+    }
+    .quickbarHidden {
+        visibility: hidden;
+        transform: scale(.9);
+        opacity: 0.2;
+    }
     .show {
         height: 33vh;
         background-color: var(--mid);
