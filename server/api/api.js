@@ -282,8 +282,6 @@ router.post("/episodes/watched/add", async (req, res) =>{
             .insert(query)
     }
 
-
-
     res.end("ok")
 })
 
@@ -332,12 +330,12 @@ router.get("/genres/fav/:uid", async (req, res) => {
             }
         }
     }
-    
+    keysSorted = Object.keys(fav).sort(function(a,b){return fav[a]-fav[b]})
     for(let [key, value] of Object.entries(fav)) {
         if(value < min) min = value
         if(value > max) max = value
     }
-    res.json({fav:getKeyByValue(fav, max)})
+    res.json(keysSorted)
 })
 
 module.exports = router
