@@ -116,25 +116,33 @@ export default {
 
             console.log(show);
 
-            let playerActive = false
+            //setting first episode as default
+            let link = show.seasons[0].episodes[0].vivo_link
 
+            //timestamp check
+            let timestampCheck = 0
+
+            //looking for last watched episode
             for (let season in show.seasons) {
                 show.seasons[season].index = season
 
                 for (let episode in show.seasons[season].episodes) {
                     show.seasons[season].episodes[episode].index = episode
 
-                    if (playerActive == false && show.seasons[season].episodes[episode].watched == false) { //hier watched check
-                        playerActive = true
-                        const link = show.seasons[season].episodes[episode].vivo_link
+                    let currentEpisode = show.seasons[season].episodes[episode]
 
-                        setMediaSource(link)
+                    console.log(currentEpisode);
+                    
+                    if (currentEpisode.watchedAt > timestampCheck) {
+                        link = currentEpisode.vivo_link
+                        timestampCheck = currentEpisode.watchedAt
                     }
                 }
             }
 
+            //setting media src and defining data for vue
+            setMediaSource(link)
             data.show = show
-
             seasonNr.value = 0
 
             const iframe = document.getElementById("mediaFrame")

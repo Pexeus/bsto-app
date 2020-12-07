@@ -12,6 +12,7 @@
   
   <Header v-if="isLoggedIn.status" @userpageactive="setUserPageObj($event)"/>
   <Search v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
+  <Quickbar v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Selection v-if="isLoggedIn.status" @newshow="openPlayer($event)"/>
   <Player v-if="isLoggedIn.status" :showID="showID"/>
   <Genres v-if="isLoggedIn.status"  @newshow="openPlayer($event)"/>
@@ -26,6 +27,7 @@ import Search from "./components/Search"
 import Login from "./components/Login"
 import Selection from "./components/Selection"
 import User from "./components/User"
+import Quickbar from "./components/Quickbar"
 
 import { reactive } from 'vue'
 
@@ -38,7 +40,8 @@ export default {
     Player,
     Selection,
     Search,
-    Genres
+    Genres,
+    Quickbar
   },
 
   setup() {

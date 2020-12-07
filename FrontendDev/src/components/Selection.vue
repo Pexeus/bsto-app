@@ -42,7 +42,6 @@ export default {
 
     setup(props, context) {
         const data = reactive({watched: [], list: []})
-
         const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         async function initSelection() {
