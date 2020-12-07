@@ -21,6 +21,9 @@
                     </div>
                 </div>
             </div>
+            <div class="progressBar">
+                    <div class="progress" :style="{width: show.progress + `%`}"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -48,15 +51,17 @@ export default {
             //fetching shows
             const responseLatest = await fetch(host + `shows/latest/${user.id}`)
             let showsLatest = await responseLatest.json()
-            showsLatest = showsLatest.slice(0, 4)
+            showsLatest = showsLatest.slice(0, 8)
 
             for (let show of showsLatest) {
                 const response = await fetch(host + `episodes/${show.ID}?UID=${user.id}`)
                 const showData = await response.json()
 
                 let currentEpisode = getCurrentEpisode(showData.seasons)
-                let completion = getCompletion(showData.seasons)
                 show.current = currentEpisode
+
+                const progress = getCompletion(showData.seasons)
+                show.progress = progress
                 
                 data.shows.push(show)
             }
@@ -81,7 +86,7 @@ export default {
                 }
             }
 
-            console.log(watched, episodes);
+            return (Math.round(watched / episodes * 100))
         } 
 
         function getCurrentEpisode(seasons) {
@@ -149,16 +154,29 @@ export default {
 </script>
 
 <style scoped>
+    .quickbar {
+        display: flex;
+        width: 100%;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        position: relative;
+        background-color: red;
+        height: 35vh;
+        flex: 0 0 500px;
+    }
+
     .quickbarVisible {
         visibility: visible;
         transform: scale(1);
         opacity: 1;
     }
+
     .quickbarHidden {
         visibility: hidden;
         transform: scale(.9);
         opacity: 0.2;
     }
+
     .show {
         height: 33vh;
         background-color: var(--mid);
@@ -167,6 +185,7 @@ export default {
         margin: 10px;
         box-shadow: 0px 0px 10px var(--shadow);
         position: relative;
+        width: 500px;
     }
 
     .imgWrapper {
@@ -189,6 +208,7 @@ export default {
         vertical-align: top;
         height: 100%;
         max-width: 250px;
+        position: relative;
     }
 
     .status {
@@ -228,5 +248,25 @@ export default {
         padding: 3px;
         padding-left: 6px;
         padding-right: 6px;
+    }
+
+    .progressBar {
+        width: 100%;
+        background-color: var(--lightbright);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    .progress {
+        background-color: var(--bright);
+        font-size: small;
+        font-weight: bold;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        border-bottom-left-radius: 5px;
+        padding-left: 2px;
     }
 </style>
