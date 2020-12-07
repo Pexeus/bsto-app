@@ -48,8 +48,11 @@ export default {
     const showID = reactive({value: ""})
     const isLoggedIn = reactive({status:localStorage.jwt})
     const userpageActive = reactive({status: false})
+    const contentLoaded = reactive({status:false})
 
-
+    setTimeout(() => {
+      contentLoaded.status = true
+    },1000)
 
     function openPlayer(id) {
       showID.value = id
@@ -78,7 +81,7 @@ export default {
     }
     
 
-    return {showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive}
+    return {showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive, contentLoaded}
   }
 }
 </script>

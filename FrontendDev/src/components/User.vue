@@ -64,7 +64,6 @@ export default {
 
         document.querySelector("body").style.overflowY = "hidden"
 
-
         function logout() {
             let decodedToken = decodeToken(localStorage.jwt)
             localStorage.removeItem("jwt")
@@ -107,7 +106,7 @@ export default {
             let resp = await fetch(api + `genres/fav/${uid}`)
             let result = await resp.json()
 
-            return result.fav
+            return result[result.length-1]
         }
         async function changePassword() {
             let obj = {
@@ -295,10 +294,10 @@ export default {
         width: 100%;
     }
     .user {
-        width:90%;
-        padding-left: 50px;
-        padding-right: 50px;
-        margin-top: 18vh;
+        width:100%;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-top: 8vh;
     }
     .settings {
         width:100%;

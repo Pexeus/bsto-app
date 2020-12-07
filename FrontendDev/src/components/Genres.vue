@@ -30,8 +30,14 @@ export default {
         const showID = reactive({value: "ddd"})
 
         async function loadShows() {
-            var genres = await fetch(host + "genres")
-            genres = await genres.json()
+
+            const token = localStorage.jwt
+            const user = decodeToken(token)
+
+            var userGenres = await fetch(host + `genres/fav/${user.id}`)
+            userGenres= await userGenres.json()
+
+            var genres = userGenres.reverse()
 
             for (let i = 0; i < genres.length; i++) {
                 let genre = genres[i]
