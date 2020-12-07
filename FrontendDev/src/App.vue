@@ -81,7 +81,6 @@ export default {
     }
 
     function loadContent(e) {
-      console.log(e)
       contentLoaded.status = true
     }
     

@@ -61,8 +61,10 @@ export default {
                 data.shows.push(show)
             }
             context.emit("contentloaded",true)
+
             document.getElementsByClassName("quickbar")[0].classList.remove("quickbarHidden")
             document.getElementsByClassName("quickbar")[0].classList.add("quickbarVisible")
+            
             console.log(data);
         }
 
