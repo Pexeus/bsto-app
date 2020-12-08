@@ -1,5 +1,9 @@
 <template>
     <div id="wrapper" class="userWrapper" @click="closeComponent()">
+        <div class="loader">
+            <p>Lade Benutzer...</p>
+            <i class="gg-spinner-alt"></i>
+        </div>
         <div class="user">
             <h1>{{user.data.name}}</h1>
             <div class="stats">
@@ -40,29 +44,16 @@
     </div>
 </template>
 <script>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 export default {
     name: "User",
-    async setup(props, context) {
+    setup(props, context) {
         const user = reactive({data:{name: "", perm: "test",stats:{seen:1,genre:""}}})
 
         const host = "http://bstoapp.staging.it-tf.ch/"
         const api = "http://bstoapp.staging.it-tf.ch/api/"
 
-
         let decodedToken = decodeToken(localStorage.jwt)
-
-        user.data.name = decodedToken.name
-        user.data.id = decodedToken.id
-
-        let showsseen = await getShowsSeen(user.data.id)
-        let episodesseen = await getEpisodesSeen(user.data.id)
-
-        user.data.stats.shseen = showsseen.count
-        user.data.stats.epseen = episodesseen.count
-        user.data.stats.genre = await getFavGenre(user.data.id)
-
-        document.querySelector("body").style.overflowY = "hidden"
 
         function logout() {
             let decodedToken = decodeToken(localStorage.jwt)
@@ -155,21 +146,71 @@ export default {
                 }
             }
         }
-        return {logout, decodeToken, user, changePassword, closeComponent}
+        function setLoader() {
+            document.getElementsByClassName("loader")[0].style.visibility = "hidden"
+            document.getElementsByClassName("user")[0].style.visibility = "visible"
+            document.getElementsByClassName("user")[0].style.opacity = "1"
+            document.getElementsByClassName("user")[0].style.transform = "scale(1)"
+            document.getElementsByClassName("loader")[0].style.display = "none"
+        }
+
+        async function loadUser() {
+            document.querySelector("body").style.overflowY = "hidden"
+            user.data.name = decodedToken.name
+            user.data.id = decodedToken.id
+
+            let showsseen = await getShowsSeen(user.data.id)
+            let episodesseen = await getEpisodesSeen(user.data.id)
+
+            user.data.stats.shseen = showsseen.count
+            user.data.stats.epseen = episodesseen.count
+            user.data.stats.genre = await getFavGenre(user.data.id)
+
+            setLoader()
+        }
+
+        loadUser()
+        
+        return {logout, decodeToken, user, changePassword, closeComponent, loadUser}
     }
 }
 </script>
 
 <style scoped>
+
 .userWrapper {
     position: fixed;
+    z-index: 10000000;
     width: 100%;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.658);
     z-index: 200;
     text-align: center;
 }
+.loader {
+    visibility: visible;
+    text-align: center;
+    margin-top: 35vh;
+    background-color: var(--dark);
+    padding: 30px;
+    width: 10%;
+    margin-left:45%;
+    border-radius: 5px;
+    box-shadow: 0px 1px 3px black;
+}
+.loader p {
+    width: 90%;
+    padding: 5%;
+}
+.loader i {
+    color: var(--bright);
+    transform: scale(1.5);
+    margin-top: 3vh;
+    display: inline-block;
+    filter: drop-shadow(0px 1px 3px var(--shadow));
+}
 .user {
+    visibility: hidden;
     background: var(--dark);
     padding-left: 100px;
     padding-right: 100px;
@@ -179,6 +220,8 @@ export default {
     margin-top: 20vh;
     box-shadow: 0px 3px 10px rgb(5, 5, 5);
     border-radius: 5px;
+    opacity: 0.2;
+    transform: scale(0.8);
 }
 .stats {
     display: block;
