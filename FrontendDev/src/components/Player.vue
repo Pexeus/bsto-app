@@ -111,7 +111,7 @@ export default {
 
         watch(() => props.showID.value, async () => {
             document.querySelector("body").style.overflowY = "hidden"
-            loadShow() 
+            loadShow()
         })
 
         async function loadShow() {
@@ -140,8 +140,6 @@ export default {
                     show.seasons[season].episodes[episode].index = episode
 
                     let currentEpisode = show.seasons[season].episodes[episode]
-
-                    console.log(currentEpisode);
                     
                     if (currentEpisode.watchedAt > timestampCheck) {
                         link = currentEpisode.vivo_link
@@ -180,6 +178,9 @@ export default {
 
                     const infos = document.getElementsByClassName("info")[0]
                     infos.style.height = document.getElementsByClassName("player")[0].offsetHeight - width * 0.56 -60 + "px"
+
+                    //reloading other components
+                    context.emit('player-updated')
                 }
             })
         }
@@ -251,6 +252,9 @@ export default {
                 document.getElementsByClassName("loader")[0].classList.remove("loaderVisible")
 
                 document.querySelector("body").style.overflowY = "scroll"
+
+                //reloading other components
+                context.emit('player-updated')
             }
         }
 

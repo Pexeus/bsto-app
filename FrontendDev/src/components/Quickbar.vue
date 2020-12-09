@@ -18,10 +18,6 @@
                         <p class="currentTitle">{{show.current.title}}</p>
                     </div>
 
-                    <div class="completion">
-                        <p>{{show.progress}}% Abgeschlossen</p>
-                    </div>
-
                     <div class="tags">
                         <div class="showTag" v-for="tag in show.genres" :key="tag">
                             <p>{{tag}}</p>
@@ -37,14 +33,22 @@
 </template>
 
 <script>
-import { createRenderer, reactive } from 'vue'
+import { createRenderer, reactive, watch } from 'vue'
 
 export default {
     name: "Quickbar",
+    props:{
+        update: Object,
+    },
 
     setup(props, context) {
         const data = reactive({shows: []})
         const host = "http://bstoapp.staging.it-tf.ch/api/"
+
+        watch(() => props.update.value, async () => {
+            console.log("Quickbar is updating")
+            initQuickbar()
+        })
         
         setTimeout(() => {
             document.getElementsByClassName("quickbar")[0].classList.remove("quickbarVisible")
@@ -55,6 +59,9 @@ export default {
             //getting user data
             const token = localStorage.jwt
             const user = decodeToken(token)
+
+            //resetting current data
+            data.shows = []
 
             //fetching shows
             const responseLatest = await fetch(host + `shows/latest/${user.id}`)
@@ -73,6 +80,7 @@ export default {
                 
                 data.shows.push(show)
             }
+
             context.emit("contentloaded",true)
 
             document.getElementsByClassName("quickbar")[0].classList.remove("quickbarHidden")
@@ -136,7 +144,11 @@ export default {
         }
 
         function swipe() {
-            const target = event.target
+            let target = event.target
+
+            while(target.tagName != "DIV") {
+                target = target.parentElement
+            }
 
             console.log(target)
 
@@ -198,8 +210,6 @@ export default {
 
     .quickbar {
         display: flex;
-        align-items: center;
-        justify-content: center;
         width: 100%;
         overflow-x: scroll;
         overflow-y: hidden;
@@ -299,9 +309,22 @@ export default {
     }
 
     .status {
+        background:var(--dark);
+        text-align: left;
+        vertical-align: middle;
+        cursor: pointer;
+        position: relative;
+        padding: 10px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 3px var(--shadow);
         margin-top: 20px;
-        margin-bottom: 10px;
-        font-size: large;
+        margin-bottom: 20px;
+    }
+
+    .status:hover {
+        box-shadow: 0px 2px 6px var(--shadow);
     }
 
     .currentEpisode {

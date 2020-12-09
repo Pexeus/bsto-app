@@ -6,7 +6,7 @@
             <div class="swipeWrapper right" @click="swipe"><i class="gg-chevron-right"></i></div>
             <div class="showWrapper">
             <div class="show" v-for="show in genre" :key="show.length" @click="openShow()" :id=show.SID>
-                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='../assets/noposter.jpg';">
+                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://i.ibb.co/jbJ4YYt/noposter.jpg';">
                 <div class="overview">
                     <p class="showTitle">{{show.title}}</p>
                     <div class="showTag" v-for="tag in show.genres" :key="tag">
@@ -88,8 +88,12 @@ export default {
 
     methods: {
         swipe(event) {
-            const showContainer = event.target.parentElement.childNodes[3]
-            const target = event.target
+            let target = event.target
+            while(target.tagName != "DIV") {
+                target = target.parentElement
+            }
+
+            const showContainer = target.parentElement.childNodes[3]
 
             let scrollValue = 0
 

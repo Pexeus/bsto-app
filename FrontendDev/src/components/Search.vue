@@ -13,7 +13,7 @@
         </div>
         <div class="results">
             <div class="show" v-for="show in data.results" :key="show.length" @click="openShow()" :id=show.ID>
-                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='../assets/noposter.jpg';">
+                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://i.ibb.co/jbJ4YYt/noposter.jpg';">
                 <div class="overview">
                     <p class="showTitle">{{show.title}}</p>
                     <div class="showTag" v-for="tag in show.genres" :key="tag">

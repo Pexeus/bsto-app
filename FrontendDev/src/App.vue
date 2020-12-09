@@ -1,9 +1,4 @@
 <template>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-control" content="no-cache">
-    <meta http-equiv="Expires" content="-1">
-  </head>
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
 
@@ -14,9 +9,9 @@
 
   <Header v-if="isLoggedIn.status && contentLoaded.status" @userpageactive="setUserPageObj($event)"/>
   <Search v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)"/>
-  <Quickbar v-if="isLoggedIn.status" @newshow="openPlayer($event)" @contentloaded="loadContent($event)"/>
-  <Selection v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)"/>
-  <Player v-if="isLoggedIn.status && contentLoaded.status" :showID="showID"/>
+  <Quickbar v-if="isLoggedIn.status" @newshow="openPlayer($event)" @contentloaded="loadContent($event)" :update="updateComponents"/>
+  <Selection v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)" :update="updateComponents"/>
+  <Player v-if="isLoggedIn.status && contentLoaded.status" :showID="showID" @player-updated="reFetch()"/>
   <Genres v-if="isLoggedIn.status && contentLoaded.status"  @newshow="openPlayer($event)"/>
 </template>
 
@@ -53,6 +48,7 @@ export default {
     const isLoggedIn = reactive({status:localStorage.jwt})
     const userpageActive = reactive({status: false})
     const contentLoaded = reactive({status:false})
+    const updateComponents = reactive({value: 0})
 
     function openPlayer(id) {
       showID.value = id
@@ -82,7 +78,12 @@ export default {
       contentLoaded.status = true
     }
 
-    return {loadContent, showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive, contentLoaded}
+    function reFetch() {
+      console.log("refetching now");
+      updateComponents.value = Math.random()
+    }
+
+    return {reFetch, updateComponents, loadContent, showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive, contentLoaded}
   }
 }
 </script>
