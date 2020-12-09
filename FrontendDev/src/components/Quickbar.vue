@@ -98,6 +98,9 @@ export default {
         } 
 
         function getCurrentEpisode(seasons) {
+            if (seasons.length == 0) {
+                return [] 
+            }
             let timestampCheck = 0
             let seasonIndex = 0
             let episodesIndex = 0
