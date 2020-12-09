@@ -6,9 +6,9 @@
   </head>
   <Login v-if="!isLoggedIn.status" @loggedin="loggedin($event)"/>
 
-  <Suspense>
-    <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
-  </Suspense>
+
+  <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
+
   
   <Loader v-if="!contentLoaded.status"/>
 
@@ -75,16 +75,12 @@ export default {
     }
 
     function setUserPageObj(e) {
-      console.log("event happened")
       userpageActive.status = e.status
-
     }
 
     function loadContent(e) {
-      console.log(e)
       contentLoaded.status = true
     }
-    
 
     return {loadContent, showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive, contentLoaded}
   }

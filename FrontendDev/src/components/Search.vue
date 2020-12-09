@@ -106,7 +106,7 @@ export default {
         width: 100%;
         text-align: center;
         padding-top: 5vh;
-        padding-bottom: 5vh;
+        padding-bottom: calc(5vh + 50px);
     }
 
     .inputWrapper {

@@ -17,6 +17,9 @@ export default {
 
 <style scoped>
     .loaderWrapper {
+        z-index: 999;
+        background-color: var(--dark);
+        position: fixed;
         width: 100%;
         height: 100vh;
         text-align: center;
