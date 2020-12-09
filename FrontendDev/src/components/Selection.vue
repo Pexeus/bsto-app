@@ -36,13 +36,21 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 export default {
     name: "Selection",
+    props:{
+        update: Object,
+    },
 
     setup(props, context) {
         const data = reactive({watched: [], list: []})
         const host = "http://bstoapp.staging.it-tf.ch/api/"
+
+        watch(() => props.update.value, async () => {
+            console.log("Selection is updating")
+            initSelection()
+        })
 
         async function initSelection() {
 
@@ -99,10 +107,12 @@ export default {
     },
     methods: {
         swipe(event) {
-            const showContainer = event.target.parentElement.childNodes[3]
-            const target = event.target
+            let target = event.target
+            while(target.tagName != "DIV") {
+                target = target.parentElement
+            }
 
-            console.log(showContainer);
+            const showContainer = target.parentElement.childNodes[3]
 
             let scrollValue = 0
 
