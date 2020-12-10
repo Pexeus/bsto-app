@@ -79,7 +79,7 @@ export default {
             console.log(payload);
             return payload
         }
-
+        
         function showUserPage() {
             context.emit("userpageactive", {status:true})
         }
