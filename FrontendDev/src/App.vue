@@ -104,6 +104,11 @@ export default {
   outline: none;
 }
 
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 :root {
   --dark: #15202b;
   --brightdark: #1a2735;
@@ -114,6 +119,13 @@ export default {
   --white: #f1faff;
   --shadow: #0d151d;
   --lightshadow: #0f1924d8;
+}
+
+/* hide swipers on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .swipeWrapper {
+    display: none;
+  }
 }
 
 *::-webkit-scrollbar {

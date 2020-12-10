@@ -4,6 +4,9 @@
             <h3>Lade Episoden...</h3>
             <i class="gg-spinner-alt"></i>
         </div>
+        <div v-if="myWindow.width <= 1000" @click="closePlayer()" class="exitButton">
+            <i class="gg-close"></i>
+        </div>
         <div class="player">
             <div class="left">
                 <div class="media">
@@ -25,9 +28,6 @@
                         <div class="addWatchlist" @click="addPlaylist()">
                             <i v-if="!data.show.info.inWatchlist" class="gg-play-list-add"></i>
                             <i v-if="data.show.info.inWatchlist" class="gg-play-list-check"></i>
-                        </div>
-                        <div v-if="myWindow.width <= 1000" @click="closePlayer()" class="exitButton">
-                            <i class="gg-close"></i>
                         </div>
                         <p class="description">{{data.show.info.desc}}</p>
                         <div class="actors" v-if="data.show.info.actors[0] != `undefined`">
@@ -268,11 +268,13 @@ export default {
 
 <style scoped>
     .exitButton {
-        position: absolute;
-        top: 3px;
-        right: 30px;
+        position: fixed;
+        top: 10px;
+        left: 10px;
         cursor: pointer;
         padding: 10px;
+        z-index: 101;
+        transform: scale(1.1);
     }
     .addWatchlist {
         position: absolute;
@@ -374,7 +376,7 @@ export default {
         width: 100%;
         vertical-align: top;
         border-radius: 5px;
-        z-index: 500;
+        z-index: 100;
     }
 
     iframe {
@@ -435,6 +437,8 @@ export default {
             padding: 0px;
             margin: 0;
             height: 100%;
+            display: inline-block;
+            width: 100%;
         }
 
         .info {
@@ -507,7 +511,7 @@ export default {
     }
 
     .episode {
-        width: 100%;
+        width: calc(100% - 20px);
         padding: 10px;
         font-size: large;
         border-bottom: thin solid var(--lightshadow);
