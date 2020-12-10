@@ -34,6 +34,7 @@
 
 <script>
 import { createRenderer, reactive, watch } from 'vue'
+import {api} from "../config"
 
 export default {
     name: "Quickbar",
@@ -43,7 +44,6 @@ export default {
 
     setup(props, context) {
         const data = reactive({shows: []})
-        const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         watch(() => props.update.value, async () => {
             console.log("Quickbar is updating")
@@ -64,12 +64,12 @@ export default {
             data.shows = []
 
             //fetching shows
-            const responseLatest = await fetch(host + `shows/latest/${user.id}`)
+            const responseLatest = await fetch(api + `shows/latest/${user.id}`)
             let showsLatest = await responseLatest.json()
             showsLatest = showsLatest.slice(0, 4)
 
             for (let show of showsLatest) {
-                const response = await fetch(host + `episodes/${show.ID}?UID=${user.id}`)
+                const response = await fetch(api + `episodes/${show.ID}?UID=${user.id}`)
                 const showData = await response.json()
 
                 let currentEpisode = getCurrentEpisode(showData.seasons)
@@ -186,7 +186,7 @@ export default {
                 body: JSON.stringify({UID: user.id, SID: Number(showID)})
             }
 
-            fetch(host + "shows/latest/add", fetchOptions).then(resp => {
+            fetch(api + "shows/latest/add", fetchOptions).then(resp => {
                 //error handling?
             })
         }
@@ -278,6 +278,9 @@ export default {
         height: 100%;
         position: relative;
         overflow-x: hidden;
+        z-index: 10;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
     }
 
     .show img {
@@ -286,6 +289,7 @@ export default {
         border-bottom-left-radius: 5px;
         cursor: pointer;
         display: inline-block;
+        z-index: 0;
     }
 
     .imgWrapper:hover img{
@@ -385,6 +389,7 @@ export default {
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
         clip-path: inset(0 0 0 0 round 0px 0px 5px 0px);
+        z-index: 15;
     }
 
     .progress {

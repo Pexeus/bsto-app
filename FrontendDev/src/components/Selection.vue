@@ -37,6 +37,8 @@
 
 <script>
 import { reactive, watch } from 'vue'
+import {api} from "../config"
+
 export default {
     name: "Selection",
     props:{
@@ -45,7 +47,6 @@ export default {
 
     setup(props, context) {
         const data = reactive({watched: [], list: []})
-        const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         watch(() => props.update.value, async () => {
             console.log("Selection is updating")
@@ -53,15 +54,14 @@ export default {
         })
 
         async function initSelection() {
-
             const token = localStorage.jwt
             const user = decodeToken(token)
 
-            const responseLatest = await fetch(host + `shows/latest/${user.id}`)
+            const responseLatest = await fetch(api + `shows/latest/${user.id}`)
             const showsLatest = await responseLatest.json()
             data.watched = showsLatest
 
-            const responseList = await fetch(host + `shows/list/${user.id}`)
+            const responseList = await fetch(api + `shows/list/${user.id}`)
             const showsList = await responseList.json()
             data.list = showsList
         }
@@ -89,7 +89,7 @@ export default {
                 body: JSON.stringify({UID: user.id, SID: Number(showID)})
             }
 
-            fetch(host + "shows/latest/add", fetchOptions).then(resp => {
+            fetch(api + "shows/latest/add", fetchOptions).then(resp => {
                 
             })
         }

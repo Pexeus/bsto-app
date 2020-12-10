@@ -27,12 +27,12 @@
 
 <script>
 import { reactive } from 'vue'
+import {api} from "../config"
 
 export default {
     name: "Search",
 
     setup(props, context) {
-        const host = "http://bstoapp.staging.it-tf.ch/api/"
         const data = reactive({results: [], status: "idle"})
 
         function sleep(ms) {
@@ -48,7 +48,7 @@ export default {
             const query = document.getElementById("queryInput").value
 
             if (query != "") {
-                const response = await fetch(host + `search/${query}`)
+                const response = await fetch(api + `search/${query}`)
                 const results = await response.json()
 
                 if (document.getElementById("queryInput").value == results.query) {
@@ -85,7 +85,7 @@ export default {
                 body: JSON.stringify({UID: user.id, SID: Number(showID)})
             }
 
-            fetch(host + "shows/latest/add", fetchOptions).then(resp => {
+            fetch(api + "shows/latest/add", fetchOptions).then(resp => {
                 console.log(resp);
             })
         }
