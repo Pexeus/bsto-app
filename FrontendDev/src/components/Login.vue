@@ -13,11 +13,11 @@
 
 <script>
 import { reactive } from 'vue'
+import {host} from "../config" 
 export default {
     name: "Login",
 
     setup(props, context) {
-        const host = "http://bstoapp.staging.it-tf.ch/"
         const loginData = reactive({username: "", password: ""})
 
         async function login() {
