@@ -45,13 +45,11 @@
 </template>
 <script>
 import { reactive, watch } from 'vue'
+import {host, api} from "../config" 
 export default {
     name: "User",
     setup(props, context) {
         const user = reactive({data:{name: "", perm: "test",stats:{seen:1,genre:""}}})
-
-        const host = "http://bstoapp.staging.it-tf.ch/"
-        const api = "http://bstoapp.staging.it-tf.ch/api/"
 
         let decodedToken = decodeToken(localStorage.jwt)
 

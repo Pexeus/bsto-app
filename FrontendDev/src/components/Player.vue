@@ -10,45 +10,49 @@
                     <iframe id="mediaFrame" :src="player.source" allowfullscreen frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
                 </div>
                 <div class="info" v-if="data.show.info != undefined">
-                    <h1 class="showTitle">{{data.show.info.title}}</h1>
-                    <div class="year">
-                        <p>{{data.show.info.fromYear}}</p><p v-if="data.show.info.toYear != 0"> - {{data.show.info.toYear}}</p>
-                    </div>
-                    <div class="genres" >
-                        <div class="genreTag" v-for="tag in data.show.info.genres" :key="tag">
-                            <p>{{tag}}</p>
+                    <div class="infoHead">
+                        <h1 class="showTitle">{{data.show.info.title}}</h1>
+                        <div class="year">
+                            <p>{{data.show.info.fromYear}}</p><p v-if="data.show.info.toYear != 0"> - {{data.show.info.toYear}}</p>
+                        </div>
+                        <div class="genres" >
+                            <div class="genreTag" v-for="tag in data.show.info.genres" :key="tag">
+                                <p>{{tag}}</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="addWatchlist" @click="addPlaylist()">
-                        <i v-if="!data.show.info.inWatchlist" class="gg-play-list-add"></i>
-                        <i v-if="data.show.info.inWatchlist" class="gg-play-list-check"></i>
-                    </div>
-                    <div v-if="myWindow.width <= 1000" @click="closePlayer()" class="exitButton">
-                        <i class="gg-close"></i>
-                    </div>
-                    <p class="description">{{data.show.info.desc}}</p>
-                    <div class="actors" v-if="data.show.info.actors[0] != `undefined`">
-                        <h3>Schauspieler:</h3>
-                        <div class="infoTag" v-for="tag in data.show.info.actors" :key="tag">
-                            <p>{{tag}}</p>
+                    <div class="infoBody">
+                        <div class="addWatchlist" @click="addPlaylist()">
+                            <i v-if="!data.show.info.inWatchlist" class="gg-play-list-add"></i>
+                            <i v-if="data.show.info.inWatchlist" class="gg-play-list-check"></i>
                         </div>
-                    </div>
-                    <div class="directors" v-if="data.show.info.directors[0] != `undefined`">
-                        <h3>Regisseure:</h3>
-                        <div class="infoTag" v-for="tag in data.show.info.directors" :key="tag">
-                            <p>{{tag}}</p>
+                        <div v-if="myWindow.width <= 1000" @click="closePlayer()" class="exitButton">
+                            <i class="gg-close"></i>
                         </div>
-                    </div>
-                    <div class="producers" v-if="data.show.info.producers[0] != `undefined`">
-                        <h3>Produzenten:</h3>
-                        <div class="infoTag" v-for="tag in data.show.info.producers" :key="tag">
-                            <p>{{tag}}</p>
+                        <p class="description">{{data.show.info.desc}}</p>
+                        <div class="actors" v-if="data.show.info.actors[0] != `undefined`">
+                            <h3>Schauspieler:</h3>
+                            <div class="infoTag" v-for="tag in data.show.info.actors" :key="tag">
+                                <p>{{tag}}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="authors" v-if="data.show.info.authors[0] != `undefined`">
-                        <h3>Autoren:</h3>
-                        <div class="infoTag" v-for="tag in data.show.info.authors" :key="tag">
-                            <p>{{tag}}</p>
+                        <div class="directors" v-if="data.show.info.directors[0] != `undefined`">
+                            <h3>Regisseure:</h3>
+                            <div class="infoTag" v-for="tag in data.show.info.directors" :key="tag">
+                                <p>{{tag}}</p>
+                            </div>
+                        </div>
+                        <div class="producers" v-if="data.show.info.producers[0] != `undefined`">
+                            <h3>Produzenten:</h3>
+                            <div class="infoTag" v-for="tag in data.show.info.producers" :key="tag">
+                                <p>{{tag}}</p>
+                            </div>
+                        </div>
+                        <div class="authors" v-if="data.show.info.authors[0] != `undefined`">
+                            <h3>Autoren:</h3>
+                            <div class="infoTag" v-for="tag in data.show.info.authors" :key="tag">
+                                <p>{{tag}}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,6 +80,7 @@
 
 <script>
 import { reactive, watch } from 'vue'
+import {api} from "../config"
 export default {
     name: "Player",
     props:{
@@ -89,8 +94,6 @@ export default {
         const seasonNr = reactive({value: 0})
         const player = reactive({source: ""})
         const myWindow = reactive({width:0})
-
-        const host = "http://bstoapp.staging.it-tf.ch/api/"
 
         window.onload = () => {
             myWindow.width = window.innerWidth
@@ -121,7 +124,7 @@ export default {
             const token = localStorage.jwt
             const user = decodeToken(token)
 
-            const response = await fetch(host + `episodes/${props.showID.value}?UID=${user.id}`)
+            const response = await fetch(api + `episodes/${props.showID.value}?UID=${user.id}`)
             const show = await response.json()
 
             console.log(show);
@@ -197,7 +200,7 @@ export default {
                 body: JSON.stringify({UID: user.id, SID: Number(props.showID.value)})
             }
 
-            fetch(host + "shows/list/add", fetchOptions).then(resp => {
+            fetch(api + "shows/list/add", fetchOptions).then(resp => {
                 loadShow()
             })
         }
@@ -236,7 +239,7 @@ export default {
                 body: JSON.stringify({UID: user.id, EID: id})
             }
 
-            fetch(host + "episodes/watched/add", fetchOptions).then(resp => {
+            fetch(api + "episodes/watched/add", fetchOptions).then(resp => {
                 
             })
         }
@@ -394,8 +397,12 @@ export default {
     }
 
     .info {
-        overflow-y: scroll;
         position: relative;
+        overflow: hidden;
+    }
+
+    .infoBody {
+        overflow: scroll;
     }
 
     @media only screen and (max-width: 1000px) {
@@ -412,12 +419,15 @@ export default {
 
         iframe {
             border-radius: 0;
+            position: sticky;
+            top: 0;
+            border-radius: 0;
         }
 
         .episodes {
             width: 100%;
             height: auto;
-            overflow: scroll;
+            overflow-y: auto;
         }
 
         .player {

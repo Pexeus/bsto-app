@@ -21,11 +21,11 @@
 
 <script>
 import { reactive } from 'vue'
+import {api} from "../config"
 export default {
     name: "Genres",
 
     setup(props, context) {
-        const host = "http://bstoapp.staging.it-tf.ch/api/"
         const shows = reactive({genres: {}})
         const showID = reactive({value: "ddd"})
 
@@ -34,7 +34,7 @@ export default {
             const token = localStorage.jwt
             const user = decodeToken(token)
 
-            var userGenres = await fetch(host + `genres/fav/${user.id}`)
+            var userGenres = await fetch(api + `genres/fav/${user.id}`)
             userGenres= await userGenres.json()
 
             var genres = userGenres.reverse()
@@ -42,7 +42,7 @@ export default {
             for (let i = 0; i < genres.length; i++) {
                 let genre = genres[i]
 
-                let response = await fetch(host + `shows/genre/${genre}`)
+                let response = await fetch(api + `shows/genre/${genre}`)
                 shows.genres[genre] = await response.json()
                 shows.genres[genre].title = genre
             }
@@ -71,7 +71,7 @@ export default {
                 body: JSON.stringify({UID: user.id, SID: Number(showID)})
             }
 
-            fetch(host + "shows/latest/add", fetchOptions).then(resp => {
+            fetch(api + "shows/latest/add", fetchOptions).then(resp => {
                 console.log("added to latest");
             })
         }

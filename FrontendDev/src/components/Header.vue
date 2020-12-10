@@ -23,11 +23,11 @@
 
 <script>
 import { reactive } from 'vue'
+import {api} from "../config"
 export default {
     name: "Header",
 
     setup(props, context) {
-        const host = "http://bstoapp.staging.it-tf.ch/api/"
         const headerData = reactive({genres: [], user: {}})
 
         document.addEventListener("scroll", ()=> {
@@ -60,7 +60,7 @@ export default {
         }
 
         async function loadGenres() {
-            var genres = await fetch(host + "genres")
+            var genres = await fetch(api + "genres")
             genres = await genres.json()
 
 
