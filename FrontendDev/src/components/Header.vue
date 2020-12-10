@@ -5,7 +5,7 @@
             <p class="selector selectorText" @click="scrollTo(`selection`)">Meine Auswahl</p>
             <p class="selector selectorText" @click="scrollTo(`search`)">Suche</p>
             <div class="selector genresOpen">
-                <p class="selectorText">Genres</p>
+                <p class="selectorTextForced selectorText">Genres</p>
                 <div class="genresDropdown" v-if="headerData.genres != undefined">
                     <div class="dropdownPointer"></div>
                     <h3>Alle Genres</h3>
@@ -116,13 +116,12 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        max-width: 50%;
         width: 400px;
+        max-width: calc(100% - 60px);
         margin-left: 20px;
     }
 
     .goTo .selector {
-        display: inline-block;
         flex-grow: 1;
         cursor: pointer;
         font-weight: bold;
@@ -138,11 +137,26 @@ export default {
         opacity: 1;
     }
 
+    @media only screen and (min-width: 800px) {
+        .selectorText {
+            display: inline-block;
+        }
+    }
+
+    @media only screen and (max-width: 800px) {
+        .selectorText {
+            display: none;
+        }
+        .selectorTextForced {
+            display: inline-block;
+        }
+    }
+
     .genresOpen:hover .genresDropdown {
         visibility: visible;
         opacity: 1;
         transform: scale(1);
-        margin-top: 0px;
+        margin-top: 50px;
     }
 
     .genresDropdown {
@@ -156,13 +170,46 @@ export default {
         cursor: default;
         width: 500px;
         text-align: center;
-        margin-left: -230px;
+        margin-left: -280px;
         margin-top: -50px;
         visibility: hidden;
         opacity: 0;
         border-bottom: 8px solid var(--bright);
         transform: scale(.7);
         transition: all ease-in-out .2s;
+    }
+
+    @media only screen and (max-width: 800px) {
+        .genresDropdown {
+            position: absolute;
+            display: inline-block;
+            background-color: var(--mid);
+            padding: 20px;
+            border-radius: 5px;
+            margin: 5px;
+            box-shadow: 0px 0px 15px var(--shadow);
+            cursor: default;
+            width: calc(100% - 10px);
+            text-align: center;
+            margin-top: -50px;
+            visibility: hidden;
+            opacity: 0;
+            border-bottom: 8px solid var(--bright);
+            transform: scale(.7);
+            transition: all ease-in-out .2s;
+            left: 0;
+        }
+
+        .dropdownPointer {
+        background-color: var(--mid);
+        width: 10px;
+        height: 10px;
+        display: inline-block;
+        position: absolute;
+        top: -5px;
+        left: calc(50% - 60px);
+        transform: rotate(45deg);
+    }
     }
 
     .dropdownPointer {
