@@ -3,11 +3,11 @@
 
 
   <User v-if="userpageActive.status && isLoggedIn.status" @userpageclosed="setUserPageObj($event)"/>
-
+  <Admin v-if="adminpageActive.status && isLoggedIn.status" @adminpageclosed="setAdminPageObj($event)"/>
   
   <Loader v-if="!contentLoaded.status"/>
 
-  <Header v-if="isLoggedIn.status && contentLoaded.status" @userpageactive="setUserPageObj($event)"/>
+  <Header v-if="isLoggedIn.status && contentLoaded.status" @userpageactive="setUserPageObj($event)" @adminpageactive="setAdminPageObj($event)"/>
   <Search v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)"/>
   <Quickbar v-if="isLoggedIn.status" @newshow="openPlayer($event)" @contentloaded="loadContent($event)" :update="updateComponents"/>
   <Selection v-if="isLoggedIn.status && contentLoaded.status" @newshow="openPlayer($event)" :update="updateComponents"/>
@@ -26,6 +26,7 @@ import Selection from "./components/Selection"
 import User from "./components/User"
 import Quickbar from "./components/Quickbar"
 import Loader from "./components/Loader"
+import Admin from "./components/Admin"
 
 import { reactive } from 'vue'
 
@@ -40,13 +41,15 @@ export default {
     Search,
     Genres,
     Quickbar,
-    Loader
+    Loader,
+    Admin
   },
 
   setup() {
     const showID = reactive({value: ""})
     const isLoggedIn = reactive({status:localStorage.jwt})
     const userpageActive = reactive({status: false})
+    const adminpageActive = reactive({status:false})
     const contentLoaded = reactive({status:false})
     const updateComponents = reactive({value: 0})
 
@@ -73,6 +76,11 @@ export default {
     function setUserPageObj(e) {
       userpageActive.status = e.status
     }
+    function setAdminPageObj(e) {
+      console.log("event")
+      console.log(e);
+      adminpageActive.status = e.status
+    }
 
     function loadContent(e) {
       contentLoaded.status = true
@@ -83,7 +91,7 @@ export default {
       updateComponents.value = Math.random()
     }
 
-    return {reFetch, updateComponents, loadContent, showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, userpageActive, contentLoaded}
+    return {reFetch, updateComponents, loadContent, showID, openPlayer, loggedin, isLoggedIn, setUserPageObj, setAdminPageObj, userpageActive, contentLoaded, adminpageActive}
   }
 }
 </script>
