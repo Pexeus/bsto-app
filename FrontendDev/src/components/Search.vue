@@ -112,6 +112,8 @@ export default {
     .inputWrapper {
         display: inline-block;
         position: relative;
+        width: 500px;
+        max-width: 90%;
     }
 
     .inputWrapper .iconWrapper {
@@ -153,8 +155,7 @@ export default {
         padding-left: 20px;
         padding-right: 20px;
         border-radius: 5px;
-        width: 500px;
-        max-width: 100%;
+        width: 100%;
         box-shadow: 0px 1px 5px var(--shadow);
     }
 

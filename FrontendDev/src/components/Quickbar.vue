@@ -271,6 +271,7 @@ export default {
         box-shadow: 0px 0px 10px var(--shadow);
         position: relative;
         flex: none;
+        max-width: calc(100% - 20px);
     }
 
     .imgWrapper {
@@ -281,6 +282,7 @@ export default {
         z-index: 10;
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
+        overflow: hidden;
     }
 
     .show img {
@@ -305,15 +307,16 @@ export default {
 
     .overview {
         display: inline-block;
-        padding: 10px;
         vertical-align: top;
         height: 100%;
-        max-width: 250px;
+        max-width: calc(50% - 10px);
         position: relative;
+        padding: 5px;
+        overflow-y: scroll;
     }
 
     .status {
-        background:var(--dark);
+        background:var(--brightmid);
         text-align: left;
         vertical-align: middle;
         cursor: pointer;
