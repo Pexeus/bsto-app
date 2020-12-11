@@ -11,6 +11,9 @@
             <div class="left">
                 <div class="media">
                     <iframe id="mediaFrame" :src="player.source" allowfullscreen frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+                    <div class="reloadMedia" @click="reloadFrame()">
+                        <i class="gg-play-forwards"></i>
+                    </div>
                 </div>
                 <div class="info" v-if="data.show.info != undefined">
                     <div class="infoHead">
@@ -101,6 +104,17 @@ export default {
 
         window.onresize = () => {
             myWindow.width = window.innerWidth
+        }
+
+        function reloadFrame() {
+            const iframe = document.getElementById("mediaFrame")
+            const src = iframe.src
+
+            iframe.src = ""
+
+            setTimeout(() => {
+                iframe.src = src
+            }, 100);
         }
 
         function scrollToSeason() {
@@ -261,7 +275,7 @@ export default {
             }
         }
 
-        return {myWindow, data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
+        return {reloadFrame, myWindow, data, seasonNr, player, setMediaSource, closePlayer, addPlaylist, saveAsWatched, scrollToSeason}
     },
 }
 </script>
@@ -377,6 +391,32 @@ export default {
         vertical-align: top;
         border-radius: 5px;
         z-index: 100;
+        position: relative;
+    }
+
+    .reloadMedia {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: var(--bright);
+        border-radius: 100%;
+        height: 40px;
+        width: 40px;
+        transform: scale(.75);
+        text-align: center;
+        box-shadow: 2px 4px 8px var(--shadow);
+        cursor: pointer;
+    }
+
+    .reloadMedia:hover {
+        transform: scale(.9);
+        box-shadow: 2px 6px 12px var(--shadow);
+    }
+
+    .reloadMedia i {
+        display: inline-block;
+        margin-top: 15px;
+        margin-left: 13px;
     }
 
     iframe {
@@ -511,7 +551,7 @@ export default {
     }
 
     .episode {
-        width: calc(100% - 20px);
+        width: 100%;
         padding: 10px;
         font-size: large;
         border-bottom: thin solid var(--lightshadow);
@@ -522,7 +562,8 @@ export default {
 
     .episodeActive {
         background-color: var(--brightLight);
-        padding: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     .episode i {

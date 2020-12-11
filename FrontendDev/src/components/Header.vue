@@ -156,10 +156,10 @@ export default {
         visibility: visible;
         opacity: 1;
         transform: scale(1);
-        margin-top: 50px;
     }
 
     .genresDropdown {
+        margin-top: 50px;
         position: absolute;
         display: inline-block;
         background-color: var(--mid);
