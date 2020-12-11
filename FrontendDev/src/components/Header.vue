@@ -14,6 +14,9 @@
             </div>
         </div>
         <div class="userMenu">
+            <div @click="showAdminPage()" v-if="isAdmin.status" class="showAdmin">
+                <i class="gg-options"></i>
+            </div>
             <div @click="showUserPage()" class="showUser">
                 <i class="gg-profile"></i>
             </div>
@@ -29,6 +32,11 @@ export default {
 
     setup(props, context) {
         const headerData = reactive({genres: [], user: {}})
+        const isAdmin = reactive({status:false})
+
+        var decoded = decodeToken(localStorage.jwt)
+
+        isAdmin.status = decoded.perm == "admin"
 
         document.addEventListener("scroll", ()=> {
             const header = document.getElementsByClassName("header")[0]
@@ -67,25 +75,21 @@ export default {
             headerData.genres = genres
         }
 
-        function loadUserData() {
-
-        }
-
         function decodeToken(token) {
             let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
-            console.log(payload);
 
             payload = JSON.parse(Buffer.from(payload, 'base64').toString())
-            console.log(payload);
             return payload
         }
-
+        
         function showUserPage() {
             context.emit("userpageactive", {status:true})
         }
+        function showAdminPage() {
+            context.emit("adminpageactive", {status:true})
+        }
         loadGenres()
-        loadUserData()
-        return { showUserPage, headerData, goToGenre, scrollTop, scrollTo}
+        return { showUserPage, showAdminPage, headerData, isAdmin,goToGenre, scrollTop, scrollTo}
     }
 }
 </script>
@@ -252,7 +256,7 @@ export default {
         align-items: center;
     }
 
-    .showUser {
+    .showUser, .showAdmin {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -261,11 +265,10 @@ export default {
         padding: 10px;
     }
 
-    .showUser:hover {
+    .showUser:hover, .showAdmin:hover {
         background-color: var(--mid);
     }
-
-    .showUser i {
+    .showUser i, .showAdmin i {
         margin-left: 5px;
         margin-right: 5px;
         transform: scale(1.2);
