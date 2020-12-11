@@ -73,6 +73,8 @@ export default {
       }
     }
 
+    loggedin(localStorage.jwt)
+
     function setUserPageObj(e) {
       userpageActive.status = e.status
     }

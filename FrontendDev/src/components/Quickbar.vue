@@ -60,9 +60,6 @@ export default {
             const token = localStorage.jwt
             const user = decodeToken(token)
 
-            //resetting current data
-            data.shows = []
-
             //fetching shows
             const responseLatest = await fetch(api + `shows/latest/${user.id}`)
             let showsLatest = await responseLatest.json()
@@ -77,7 +74,10 @@ export default {
 
                 const progress = getCompletion(showData.seasons)
                 show.progress = progress
-                
+            }
+            data.shows = []
+
+            for (let show of showsLatest) {
                 data.shows.push(show)
             }
 
@@ -85,8 +85,6 @@ export default {
 
             document.getElementsByClassName("quickbar")[0].classList.remove("quickbarHidden")
             document.getElementsByClassName("quickbar")[0].classList.add("quickbarVisible")
-            
-            console.log(data);
         }
 
         function getCompletion(seasons) {
@@ -149,8 +147,6 @@ export default {
             while(target.tagName != "DIV") {
                 target = target.parentElement
             }
-
-            console.log(target)
 
             const showContainer = target.parentElement.childNodes[2]
 
@@ -271,7 +267,32 @@ export default {
         box-shadow: 0px 0px 10px var(--shadow);
         position: relative;
         flex: none;
-        max-width: calc(100% - 20px);
+    }
+
+    .overview {
+        padding: 10px;
+        display: inline-block;
+        vertical-align: top;
+        height: 100%;
+    }
+
+    .overview h2 {
+        display:block;
+        max-width: 250px;
+        word-wrap:break-word;
+    }
+
+    .status {
+        display:block;
+        max-width: 250px;
+        word-wrap:break-word;
+        margin-top: 20px;
+        opacity: .9;
+    }
+
+    .tags {
+        margin-top: 20px;
+        max-width: 250px;
     }
 
     .imgWrapper {
@@ -303,35 +324,6 @@ export default {
         visibility: visible;
         transform: scale(1);
         opacity: 1;
-    }
-
-    .overview {
-        display: inline-block;
-        vertical-align: top;
-        height: 100%;
-        max-width: calc(50% - 10px);
-        position: relative;
-        padding: 5px;
-        overflow-y: scroll;
-    }
-
-    .status {
-        background:var(--brightmid);
-        text-align: left;
-        vertical-align: middle;
-        cursor: pointer;
-        position: relative;
-        padding: 10px;
-        padding-top: 20px;
-        padding-bottom: 20px;
-        border-radius: 5px;
-        box-shadow: 0px 0px 3px var(--shadow);
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    .status:hover {
-        box-shadow: 0px 2px 6px var(--shadow);
     }
 
     .currentEpisode {
