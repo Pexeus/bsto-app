@@ -42,7 +42,6 @@ export default {
             }
             else {
                 let token = loginResponse
-
                 localStorage.setItem("jwt", token)
                 context.emit("loggedin", token)
             }
