@@ -70,7 +70,7 @@ router.get("/episodes/:sid", async (req, res) => {
                 .where({UID: UID, EID: episodes[x].ID})
 
             if (watchedCheck.length > 0) {
-                console.log(watchedCheck[0].TIMESTAMP);
+                //console.log(watchedCheck[0].TIMESTAMP);
                 episodes[x].watched = true
                 episodes[x].watchedAt = watchedCheck[0].TIMESTAMP
             }
@@ -95,6 +95,21 @@ router.get("/episodes/:sid", async (req, res) => {
     res.json(result)
 })
 
+
+//getting locally saved images
+router.get("/image/:ID", async (req, res) => {
+    console.log(req.params.ID);
+    
+    const image = await db("covers").where({coverID: req.params.ID})
+
+    if (image.length != 0) {
+        res.json(image[0])
+    }
+    else {
+        res.json({data: "https://i.ibb.co/jbJ4YYt/noposter.jpg"})
+    }
+})
+
 router.get("/search/:query",async (req, res) => {
     console.clear()
     const query = req.params.query
@@ -103,7 +118,7 @@ router.get("/search/:query",async (req, res) => {
 
     const results = await db("shows")
     .whereRaw(`LOWER(title) LIKE ?`, [`%${query}%`])
-    .limit(30)
+    .limit(50)
 
     for (result of results) {
         const metadata = await db("metadata")
@@ -165,7 +180,8 @@ router.get("/shows/genre/:genre", async (req, res) => {
         limit = req.query.limit
     }
     let input = req.params.genre
-    let meta = await db("metadata").where("genres", "like", `%${input}%`).limit(limit)
+    let meta = await db("metadata").where("genres", "like", `%${input}%`).limit(limit).orderByRaw('RAND()')
+    console.log(meta.length);
     for(let x=0; x<meta.length; x++) {
         let s = await db("shows").where({ID:meta[x].SID})
         meta[x].title = s[0].title
