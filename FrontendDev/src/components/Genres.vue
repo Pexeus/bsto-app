@@ -6,7 +6,7 @@
             <div class="swipeWrapper right" @click="swipe"><i class="gg-chevron-right"></i></div>
             <div class="showWrapper">
             <div class="show" v-for="show in genre" :key="show.length" @click="openShow()" :id=show.SID>
-                <img :src="show.cover" :alt="show.title"  onerror="this.onerror=null;this.src='https://i.ibb.co/jbJ4YYt/noposter.jpg';">
+                <img :src="show.cover" :alt="show.title"  @error="reloadIMG(show.cover)" :id="show.cover">
                 <div class="overview">
                     <p class="showTitle">{{show.title}}</p>
                     <div class="showTag" v-for="tag in show.genres" :key="tag">
@@ -29,6 +29,27 @@ export default {
         const shows = reactive({genres: {}})
         const showID = reactive({value: "ddd"})
 
+        async function reloadIMG(cover) {
+            const target = document.getElementById(cover)
+            target.src = "https://i.ibb.co/jbJ4YYt/noposter.jpg"
+
+            let imageID = cover.match(/\d+/)[0]
+
+            const response = await fetch(api + "image/" + imageID)
+            const imageData = await response.json()
+            
+            if (imageData.data.length < 100) {
+                target.src = imageData.data
+            }
+            else {
+                target.src = `data:image/jpeg;base64, ${imageData.data}`
+            }
+        }
+
+        function sleep (time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+        }
+
         async function loadShows() {
 
             const token = localStorage.jwt
@@ -43,8 +64,15 @@ export default {
                 let genre = genres[i]
 
                 let response = await fetch(api + `shows/genre/${genre}`)
-                shows.genres[genre] = await response.json()
+                const showData = await response.json()
+
+                shows.genres[genre] = []
                 shows.genres[genre].title = genre
+
+                for(let show of showData) {
+                    await sleep(70)
+                    shows.genres[genre].push(show)
+                }
             }
         }
 
@@ -83,7 +111,7 @@ export default {
         }
 
         loadShows()
-        return {shows, showID, openShow}
+        return {shows, showID, openShow, reloadIMG}
     },
 
     methods: {

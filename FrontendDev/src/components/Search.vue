@@ -109,6 +109,13 @@ export default {
         padding-bottom: calc(5vh + 50px);
     }
 
+    @media only screen and (max-width: 800px) {
+        .searchbar {
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+    }
+
     .inputWrapper {
         display: inline-block;
         position: relative;

@@ -40,6 +40,13 @@
                     </div>
                 </div>
             </div>
+            <div class="downloadApp">
+                <a href="../assets/Neoflix.apk" @click.prevent="downloadItem(`../assets/Neoflixx.apk`)">
+                    <div class="downloadButton">
+                        <p>Download</p>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </template>
@@ -167,9 +174,17 @@ export default {
             setLoader()
         }
 
+        function downloadItem (url) {
+            console.log(url);
+
+            fetch(url, { responseType: 'blob' }).then(res => {
+                console.log(res);
+            })
+        }
+
         loadUser()
         
-        return {logout, decodeToken, user, changePassword, closeComponent, loadUser}
+        return {downloadItem, logout, decodeToken, user, changePassword, closeComponent, loadUser}
     }
 }
 </script>
@@ -191,8 +206,8 @@ export default {
     margin-top: 35vh;
     background-color: var(--dark);
     padding: 30px;
-    width: 10%;
-    margin-left:45%;
+    width: 300px;
+    margin-left: calc(50% - 150px);
     border-radius: 5px;
     box-shadow: 0px 1px 3px black;
 }

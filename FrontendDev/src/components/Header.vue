@@ -101,6 +101,7 @@ export default {
         -webkit-filter: drop-shadow(0px 1px 3px rgb(10, 10, 10));
         filter: drop-shadow(0px 1px 3px rgb(10, 10, 10));
     }
+
     .header {
         width: 100%;
         height: 50px;
@@ -163,7 +164,6 @@ export default {
     }
 
     .genresDropdown {
-        margin-top: 50px;
         position: absolute;
         display: inline-block;
         background-color: var(--mid);
@@ -175,12 +175,22 @@ export default {
         width: 500px;
         text-align: center;
         margin-left: -280px;
-        margin-top: -50px;
+        margin-top: 50px;
         visibility: hidden;
         opacity: 0;
         border-bottom: 8px solid var(--bright);
         transform: scale(.7);
         transition: all ease-in-out .2s;
+    }
+
+    .dropdownPointer {
+        background-color: var(--mid);
+        width: 10px;
+        height: 10px;
+        display: inline-block;
+        position: absolute;
+        top: -5px;
+        transform: rotate(45deg);
     }
 
     @media only screen and (max-width: 800px) {
@@ -195,7 +205,7 @@ export default {
             cursor: default;
             width: calc(100% - 10px);
             text-align: center;
-            margin-top: -50px;
+            margin-top: 50px;
             visibility: hidden;
             opacity: 0;
             border-bottom: 8px solid var(--bright);
@@ -205,25 +215,8 @@ export default {
         }
 
         .dropdownPointer {
-        background-color: var(--mid);
-        width: 10px;
-        height: 10px;
-        display: inline-block;
-        position: absolute;
-        top: -5px;
-        left: calc(50% - 60px);
-        transform: rotate(45deg);
-    }
-    }
-
-    .dropdownPointer {
-        background-color: var(--mid);
-        width: 10px;
-        height: 10px;
-        display: inline-block;
-        position: absolute;
-        top: -5px;
-        transform: rotate(45deg);
+            display: none;
+        }
     }
 
     .genresDropdown h3 {
