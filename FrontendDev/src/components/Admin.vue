@@ -362,7 +362,7 @@ h1 {
     background: var(--dark);
     border-radius: 5px;
     padding: 50px;
-    margin-top: 30vh;
+    margin-top: 10vh;
     transform: scale(0.8);
     opacity: 0.2;
     box-shadow: 0px 3px 10px rgb(5, 5, 5);
@@ -401,9 +401,19 @@ h1 {
 .navActive {
     color: var(--bright);
 }
+
+.list {
+    max-height: 50vh;
+    overflow: scroll;
+    position: relative;
+}
+
+.userTable {
+    position: relative;
+}
+
 table {
     box-sizing: border-box;
-    overflow-y: scroll;
 }
 table td, table th {
     padding: 10px;
@@ -434,8 +444,6 @@ table i {
 .tr_h {
     background: var(--mid);
     border-bottom: 4px solid var(--bright);
-    position: sticky;
-    top: 0;
 }
 
 .on i {

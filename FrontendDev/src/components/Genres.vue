@@ -70,7 +70,6 @@ export default {
                 shows.genres[genre].title = genre
 
                 for(let show of showData) {
-                    await sleep(70)
                     shows.genres[genre].push(show)
                 }
             }
@@ -79,7 +78,7 @@ export default {
         function openShow() {
             let target = event.target
 
-            while (target.id == "") {
+            while (target.id == "" || target.id.includes("https://bs.to")) {
                 target = target.parentElement
             }
 

@@ -51,6 +51,7 @@ export default {
 
         function scrollTo(classList) {
             const target = document.getElementsByClassName(classList)[0]
+
             target.scrollIntoView({behavior: "smooth", block: "center"});
         }
 
@@ -61,7 +62,12 @@ export default {
         function goToGenre(genre) {
             const target = document.getElementById("genre_" + genre)
 
-            target.scrollIntoView({behavior: "smooth"});
+            if (target == null) {
+                alert("Dieses Genre wird noch geladen, bitte warte einige Sekunden.")
+            }
+            else {
+                target.scrollIntoView({behavior: "smooth", block: "center"});
+            }
             
             //evtl so epis
             //target.style.color = "var(--bright)"

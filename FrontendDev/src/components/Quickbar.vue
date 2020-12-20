@@ -278,13 +278,13 @@ export default {
 
     .overview h2 {
         display:block;
-        max-width: 250px;
+        max-width: 180px;
         word-wrap:break-word;
     }
 
     .status {
         display:block;
-        max-width: 250px;
+        max-width: 180px;
         word-wrap:break-word;
         margin-top: 20px;
         opacity: .9;
@@ -292,7 +292,7 @@ export default {
 
     .tags {
         margin-top: 20px;
-        max-width: 250px;
+        max-width: 180px;
     }
 
     .imgWrapper {
