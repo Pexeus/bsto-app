@@ -5,17 +5,21 @@
             <i class="gg-spinner-alt"></i>
         </div>
         <div class="player">
-            <p>das ist der player</p>
             <div class="media">
-                
+                <iframe class="showFrame" id="mediaFrame" :src="player.source" allowfullscreen frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-same-origin" allow='autoplay'></iframe>
             </div>
         </div>
+        <div class="info">
+
+        </div>
+        <div class="episodes"></div>
     </div>
 </template>
 
 <script>
 import { reactive, watch } from 'vue'
 import {api} from "../config"
+import LoginVue from './Login.vue'
 
 export default {
     name: "Player",
@@ -30,18 +34,32 @@ export default {
             toggleMode("load")
 
             const show = await getShow(props.showID.value)
+            data.show = show
             toggleMode("active")
+
+            console.log(show.info.hasWatched);
             console.log(show);
 
+            let source = false
+
             if (show.info.hasWatched == true) {
-                watchLatest(show)
+                console.log("sorucing");
+                source = getLatestEpisode(show)
             }
             else {
-                watchTrailer(show)
+                source = getTrailer(show)
             }
+
+            player.source = source
         }
 
-        function watchLatest(show) {
+        function getTrailer(show) {
+            const code = show.info.trailer.split("https://www.youtube.com/watch?v=")[1]
+            
+            return "`https://www.youtube.com/embed/${code}?autoplay=1`"
+        }
+
+        function getLatestEpisode(show) {
             console.log("loading latest episode");
             let link = ""
 
@@ -61,11 +79,10 @@ export default {
                 }
             }
 
-            console.log(link);
-        }
+            const code = link.split("https://vivo.sx/")[1]
+            const url = `https://vivo.sx/embed/${code}`
 
-        function watchTrailer(show) {
-            console.log("loading trailer");
+            return url
         }
 
         function toggleMode(mode) {
@@ -117,7 +134,7 @@ export default {
             init()
         })
 
-        return {closePlayer}
+        return {closePlayer, data, player}
     }
 }
 </script>
