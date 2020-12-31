@@ -8,11 +8,46 @@
             <div class="media">
                 <iframe class="showFrame" id="mediaFrame" :src="player.source" allowfullscreen frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-same-origin" allow='autoplay'></iframe>
             </div>
-        </div>
-        <div class="info">
+            <div class="info">
+                <h1 class="showTitle">{{data.show.info.title}}</h1>
+                <div class="year">
+                    <p>{{data.show.info.fromYear}}</p><p v-if="data.show.info.toYear != 0"> - {{data.show.info.toYear}}</p>
+                </div>
+                <div class="genres" >
+                    <div class="genreTag" v-for="tag in data.show.info.genres" :key="tag">
+                        <p>{{tag}}</p>
+                    </div>
+                </div>
+                <p class="description">{{data.show.info.desc}}</p>
+                <div class="actors" v-if="data.show.info.actors[0] != `undefined`">
+                    <h3>Schauspieler:</h3>
+                        <div class="infoTag" v-for="tag in data.show.info.actors" :key="tag">
+                        <p>{{tag}}</p>
+                    </div>
+                </div>
+                <div class="directors" v-if="data.show.info.directors[0] != `undefined`">
+                    <h3>Regisseure:</h3>
+                        <div class="infoTag" v-for="tag in data.show.info.directors" :key="tag">
+                        <p>{{tag}}</p>
+                    </div>
+                </div>
+                <div class="producers" v-if="data.show.info.producers[0] != `undefined`">
+                    <h3>Produzenten:</h3>
+                    <div class="infoTag" v-for="tag in data.show.info.producers" :key="tag">
+                        <p>{{tag}}</p>
+                    </div>
+                </div>
+                <div class="authors" v-if="data.show.info.authors[0] != `undefined`">
+                    <h3>Autoren:</h3>
+                    <div class="infoTag" v-for="tag in data.show.info.authors" :key="tag">
+                        <p>{{tag}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="episodes">
 
+            </div>
         </div>
-        <div class="episodes"></div>
     </div>
 </template>
 
@@ -30,6 +65,7 @@ export default {
         const data = reactive({show: {}})
         const player = reactive({source: ""})
 
+        //Initating player
         async function init() {
             toggleMode("load")
 
@@ -50,15 +86,24 @@ export default {
                 source = getTrailer(show)
             }
 
+            //calculating frame height (16:9 format)
+            const frame = document.getElementById("mediaFrame")
+            frame.addEventListener("load" , () => {
+                const width = event.target.offsetWidth
+                event.target.style.height = width * 0.56 + "px"
+            })
+
             player.source = source
         }
 
+        //get embed URL of trailer
         function getTrailer(show) {
             const code = show.info.trailer.split("https://www.youtube.com/watch?v=")[1]
             
-            return "`https://www.youtube.com/embed/${code}?autoplay=1`"
+            return `https://www.youtube.com/embed/${code}?autoplay=1`
         }
 
+        //get latest episode by timestaps (watched last)
         function getLatestEpisode(show) {
             console.log("loading latest episode");
             let link = ""
@@ -85,6 +130,7 @@ export default {
             return url
         }
 
+        //toggling player status (active, inactive, etc...)
         function toggleMode(mode) {
             const container = document.getElementsByClassName("playerContainer")[0]
             const player = document.getElementsByClassName("player")[0]
@@ -100,6 +146,7 @@ export default {
             if (mode == "hidden") {
                 container.classList.remove("playerContainerVisible")
                 loader.classList.remove("loaderVisible")
+                player.classList.remove("playerVisible")
             }
             if (mode == "active") {
                 loader.classList.remove("loaderVisible")
@@ -107,6 +154,7 @@ export default {
             }
         }
 
+        //getting dataset of show by id and user
         async function getShow(id) {
             const token = localStorage.jwt
             const user = decodeToken(token)
@@ -117,6 +165,7 @@ export default {
             return show
         }
 
+        //hess shit
         function decodeToken(token) {
             let payload = token.replace(/-/g, '+').replace(/_/g, '/').split('.')[1]
             payload = JSON.parse(Buffer.from(payload, 'base64').toString())
@@ -129,6 +178,7 @@ export default {
             }
         }
 
+        //watching for prop changes, initate player on change
         watch(() => props.showID.value, async () => {
             console.clear()
             init()
@@ -152,6 +202,16 @@ export default {
         visibility: hidden;
         opacity: 0;
         overflow: scroll;
+    }
+
+    .info p {
+        display: inline;
+    }
+
+    .info h3 {
+        display: inline-block;
+        font-weight: 500;
+        margin-top: 10px;
     }
 
     .playerContainerVisible {
@@ -184,6 +244,48 @@ export default {
         transform: scale(1);
         left: calc(50% - 150px);
         z-index: -100;
+    }
+
+    .player {
+        width: 800px;
+        background-color: var(--dark);
+        border-radius: 10px;
+        display: inline-block;
+        margin-top: 150px;
+        box-shadow: 0px 0px 80px black;
+    }
+
+    .media {
+        width: 100%;
+    }
+
+    iframe {
+        width: 100%;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .info {
+        text-align: left;
+        padding: 10px;
+    }
+
+    .genres {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .genreTag{
+        background-color: var(--bright);
+        border-radius: 18px;
+        color: #394867;
+        display: inline-block;
+        margin-right: 6px;
+        margin-bottom: 6px;
+        font-weight: bold;
+        padding: 4px;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
     .iconWrapper {
