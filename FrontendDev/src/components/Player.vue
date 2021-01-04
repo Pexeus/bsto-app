@@ -4,9 +4,16 @@
             <h3>Lade Episoden...</h3>
             <i class="gg-spinner-alt"></i>
         </div>
-        <div class="player">
+        <div class="player" v-if="data.show.info != undefined">
             <div class="media">
                 <iframe class="showFrame" id="mediaFrame" :src="player.source" allowfullscreen frameborder="0" scrolling="no" sandbox="allow-scripts allow-forms allow-same-origin" allow='autoplay'></iframe>
+                <div v-if="player.trailerMode == true" class="playNow" @click="playFirst()">
+                    <i class="gg-play-button-o"></i>
+                    <p>Jetzt ansehen</p>
+                </div>
+                <div class="closePlayerMobile" @click="closePlayer()">
+                    <i class="gg-close"></i>
+                </div>
             </div>
             <div class="info">
                 <h1 class="showTitle">{{data.show.info.title}}</h1>
@@ -45,7 +52,16 @@
                 </div>
             </div>
             <div class="episodes">
-
+                <div class="seasons">
+                    <div class="season" v-for="season in data.show.seasons" :key="season">
+                        <h2 :id="`season_` + (parseInt(season.index))">Staffel {{parseInt(season.index)}}</h2>
+                        <div class="episode" :id="`https://vivo.sx/embed/` + episode.vivo_link.split(`https://vivo.sx/`)[1]" v-for="episode in season.episodes" :key="episode" @click="setVivoSource(episode.vivo_link), saveAsWatched(episode.ID)">
+                            <p>{{episode.title}}</p>
+                            <i v-if="episode.watched == true && episode.vivo_link.includes(`error:`) == false" class="gg-eye-alt"></i>
+                            <i v-if="episode.vivo_link.includes(`error:`)" class="gg-smile-sad"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -63,44 +79,99 @@ export default {
     },
     setup(props, context) {
         const data = reactive({show: {}})
-        const player = reactive({source: ""})
+        const player = reactive({source: "", trailerMode: false})
+        var modeGlobal = "hidden"
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }   
 
         //Initating player
         async function init() {
+            console.log("initiating player");
             toggleMode("load")
 
             const show = await getShow(props.showID.value)
-            data.show = show
-            toggleMode("active")
-
-            console.log(show.info.hasWatched);
             console.log(show);
+            data.show = show
+
+            await sleep(100)
 
             let source = false
 
             if (show.info.hasWatched == true) {
-                console.log("sorucing");
                 source = getLatestEpisode(show)
             }
             else {
                 source = getTrailer(show)
             }
 
+            setPlayerSource(source)
+        }
+
+        //setting a default vivo URL as source
+        function setVivoSource(url) {
+            const vivoCode = url.split("https://vivo.sx/")[1]
+
+            if (player.source == "https://vivo.sx/embed/" + vivoCode) {
+                console.log("same source, iframe reloading");
+
+                setPlayerSource("https://www.w3schools.com")
+                
+                setTimeout(() => {
+                    setPlayerSource("https://vivo.sx/embed/" + vivoCode)
+                }, 1000);
+            }
+            else {
+                setPlayerSource("https://vivo.sx/embed/" + vivoCode)
+            }
+        }
+
+        //setting an embed URL as source
+        function setPlayerSource(source) {
+            console.log("new player source: " + source);
+
+            if(source.includes("https://www.youtube.com/")) {
+                player.trailerMode = true
+            }
+            else {
+                player.trailerMode = false
+            }
+
+            console.log("trailerMode: " + player.trailerMode);
+
             //calculating frame height (16:9 format)
             const frame = document.getElementById("mediaFrame")
             frame.addEventListener("load" , () => {
-                const width = event.target.offsetWidth
-                event.target.style.height = width * 0.56 + "px"
+                if(modeGlobal == "load") {
+                    const width = event.target.offsetWidth
+                    event.target.style.height = width * 0.56 + "px"
+
+                    //toggling to active state
+                    toggleMode("active")
+                }
             })
 
             player.source = source
+        }
+        
+        //play the first episode of the show and disable player mode
+        function playFirst() {
+            console.log("playing first episode");
+
+            const link = data.show.seasons[0].episodes[0].vivo_link
+            const code = link.split("https://vivo.sx/")[1]
+            const url = `https://vivo.sx/embed/${code}`
+
+            const firstEpisode = document.getElementById(url)
+            firstEpisode.click()
         }
 
         //get embed URL of trailer
         function getTrailer(show) {
             const code = show.info.trailer.split("https://www.youtube.com/watch?v=")[1]
             
-            return `https://www.youtube.com/embed/${code}?autoplay=1`
+            return `https://www.youtube.com/embed/${code}?autoplay=1&showinfo=0&controls=0`
         }
 
         //get latest episode by timestaps (watched last)
@@ -131,26 +202,38 @@ export default {
         }
 
         //toggling player status (active, inactive, etc...)
-        function toggleMode(mode) {
+        async function toggleMode(mode) {
             const container = document.getElementsByClassName("playerContainer")[0]
             const player = document.getElementsByClassName("player")[0]
             const loader = document.getElementsByClassName("loader")[0]
 
-            console.log("setting mode to: " + mode);
+            if (modeGlobal != mode) {
+                console.log("setting mode to: " + mode);
 
+                if (mode == "load") {
+                    container.classList.add("playerContainerVisible")
+                    loader.classList.add("loaderVisible")
+                }
+                if (mode == "hidden") {
+                    player.classList.remove("playerVisible")
+                    await sleep(200)
 
-            if (mode == "load") {
-                container.classList.add("playerContainerVisible")
-                loader.classList.add("loaderVisible")
+                    container.classList.remove("playerContainerVisible")
+                    loader.classList.remove("loaderVisible")
+
+                    setPlayerSource("")
+                }
+                if (mode == "active") {
+                    loader.classList.remove("loaderVisible")
+                    player.classList.add("playerVisible")
+                    player.scrollTo(0, 0)
+                    container.scrollTo(0, 0)
+                }
+
+                modeGlobal = mode
             }
-            if (mode == "hidden") {
-                container.classList.remove("playerContainerVisible")
-                loader.classList.remove("loaderVisible")
-                player.classList.remove("playerVisible")
-            }
-            if (mode == "active") {
-                loader.classList.remove("loaderVisible")
-                player.classList.add("playerVisible")
+            else {
+                console.log(`mode ${mode} is already active`);
             }
         }
 
@@ -173,18 +256,64 @@ export default {
         }
 
         function closePlayer() {
-            if (event.target.className.includes("playerContainerVisible")) {
+            console.log(event.target.className);
+
+            if (event.target.className.includes("playerContainerVisible") || event.target.className.includes("closePlayerMobile") || event.target.className.includes("gg-close")) {
                 toggleMode("hidden")
             }
+        }
+
+        //save an episode as watched (user specified)
+        function saveAsWatched(id) {
+            const token = localStorage.jwt
+            const user = decodeToken(token)
+
+            let target = event.target
+
+            while (target.tagName != "DIV") {
+                target = target.parentElement
+            }
+
+            if (target.querySelector("i") == null && event.target.querySelector(".gg-smile-sad") == null) {
+                const icon = document.createElement("i")
+                icon.classList.add("gg-eye-alt")
+
+                icon.style.display = "inline-block"
+                icon.style.float = "right"
+
+                target.appendChild(icon)
+            }
+
+            let fetchOptions = {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({UID: user.id, EID: id})
+            }
+
+            fetch(api + "episodes/watched/add", fetchOptions).then(resp => {
+                console.log(`episode ${id} saved as watched`);
+            })
         }
 
         //watching for prop changes, initate player on change
         watch(() => props.showID.value, async () => {
             console.clear()
+            console.log("change dedected");
             init()
         })
 
-        return {closePlayer, data, player}
+        window.addEventListener("resize", () => {
+            if (modeGlobal == "active") {
+                const frame = document.getElementById("mediaFrame")
+
+                const width = frame.offsetWidth
+                frame.style.height = width * 0.56 + "px"
+            }
+        })
+
+        return {closePlayer, data, player, setVivoSource, saveAsWatched, playFirst}
     }
 }
 </script>
@@ -251,12 +380,110 @@ export default {
         background-color: var(--dark);
         border-radius: 10px;
         display: inline-block;
-        margin-top: 150px;
+        margin-top: 0px;
         box-shadow: 0px 0px 80px black;
+        z-index: 5;
+        transform: scale(.5);
+        opacity: 0;
+    }
+
+    .playerVisible {
+        transform: scale(1);
+        opacity: 1;
+        margin-top: 80px;
+        margin-bottom: 80px;
+    }
+
+    @media only screen and (max-width: 900px) {
+        .player {
+            width: 100%;
+            background-color: var(--dark);
+            border-radius: 0;
+            display: inline-block;
+            box-shadow: 0;
+            z-index: 5;
+            transform: scale(.5);
+            opacity: 0;
+        }
+
+        .playerVisible {
+            transform: scale(1);
+            opacity: 1;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        iframe {
+            border-radius: 0;
+        }
+
+        .closePlayerMobile {
+            position: absolute;
+            padding: 9px;
+            display: inline-block;
+            background-color: var(--bright);
+            top: 12px;
+            left: 12px;
+            border-radius: 100%;
+            opacity: .9;
+            cursor: pointer;
+            box-shadow: 0px 0px 3px var(--shadow);
+        }
+
+        .closePlayerMobile:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+    }
+
+    @media only screen and (min-width: 900px) {
+        .closePlayerMobile {
+            display: none;
+        }
+    }
+
+    @media only screen and (min-width: 1300px) {
+        .player {
+            width: 1000px;
+        }
     }
 
     .media {
         width: 100%;
+        z-index: 10;
+        display: block;
+        position: relative;
+    }
+
+    .playNow {
+        position: absolute;
+        padding: 12px;
+        padding-left: 20px;
+        padding-right: 20px;
+        display: inline-block;
+        background-color: var(--bright);
+        bottom: 30px;
+        right: 30px;
+        border-radius: 10px;
+        opacity: .9;
+        cursor: pointer;
+        box-shadow: 0px 0px 3px var(--shadow);
+    }
+
+    .playNow:hover {
+        opacity: 1;
+    }
+
+    .playNow p {
+        font-weight: bold;
+        margin-left: 15px;
+    }
+
+    .playNow * {
+        display: inline-block;
+        vertical-align: middle;
+        color: var(--white);
+        cursor: pointer;
     }
 
     iframe {
@@ -265,9 +492,16 @@ export default {
         border-top-right-radius: 10px;
     }
 
+    @media only screen and (max-width: 900px) {
+        iframe {
+            border-radius: 0;
+        }
+    }
+
     .info {
         text-align: left;
         padding: 10px;
+        margin-bottom: 20px;
     }
 
     .genres {
@@ -286,6 +520,45 @@ export default {
         padding: 4px;
         padding-left: 8px;
         padding-right: 8px;
+    }
+
+    .episodes {
+        text-align: left;
+    }
+
+    .episodes h2 {
+        padding-left: 10px;
+    }
+
+    .episodes h1 {
+        padding-left: 20px;
+        margin-bottom: 20px;
+    }
+
+    .season {
+        margin-bottom: 30px;
+    }
+
+    .episode {
+        width: 100%;
+        text-align: left;
+        padding: 10px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--lightshadow);
+        cursor: pointer;
+    }
+
+    .episode:hover {
+        background-color: var(--mid);
+    }
+
+    .season i {
+        float: right;
+    }
+
+    .episode * {
+        display: inline-block;
     }
 
     .iconWrapper {
