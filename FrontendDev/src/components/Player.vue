@@ -16,6 +16,10 @@
                 </div>
             </div>
             <div class="info">
+                <div class="addWatchlist" @click="addPlaylist()">
+                    <i v-if="!data.show.info.inWatchlist" class="gg-play-list-add"></i>
+                    <i v-if="data.show.info.inWatchlist" class="gg-play-list-check"></i>
+                </div>
                 <h1 class="showTitle">{{data.show.info.title}}</h1>
                 <div class="year">
                     <p>{{data.show.info.fromYear}}</p><p v-if="data.show.info.toYear != 0"> - {{data.show.info.toYear}}</p>
@@ -59,6 +63,7 @@
                             <p>{{episode.title}}</p>
                             <i v-if="episode.watched == true && episode.vivo_link.includes(`error:`) == false" class="gg-eye-alt"></i>
                             <i v-if="episode.vivo_link.includes(`error:`)" class="gg-smile-sad"></i>
+                            <i class="gg-play-button-o"></i>
                         </div>
                     </div>
                 </div>
@@ -107,6 +112,9 @@ export default {
             }
 
             setPlayerSource(source)
+
+            //reloading other components
+            context.emit('player-updated')
         }
 
         //setting a default vivo URL as source
@@ -125,6 +133,21 @@ export default {
             else {
                 setPlayerSource("https://vivo.sx/embed/" + vivoCode)
             }
+
+            setEpisodePlaying("https://vivo.sx/embed/" + vivoCode)
+        }
+
+        //marking an episode as currently playing
+        function setEpisodePlaying(id) {
+            const playedBefore = document.getElementsByClassName("episodePlaying")
+            if (playedBefore.length != 0) {
+                playedBefore[0].classList.remove("episodePlaying")
+            }
+
+            const target = document.getElementById(id)
+            console.log(id);
+            console.log(target);
+            target.classList.add("episodePlaying")
         }
 
         //setting an embed URL as source
@@ -213,6 +236,7 @@ export default {
                 if (mode == "load") {
                     container.classList.add("playerContainerVisible")
                     loader.classList.add("loaderVisible")
+                    container.scrollTo(0, 0)
                 }
                 if (mode == "hidden") {
                     player.classList.remove("playerVisible")
@@ -260,6 +284,9 @@ export default {
 
             if (event.target.className.includes("playerContainerVisible") || event.target.className.includes("closePlayerMobile") || event.target.className.includes("gg-close")) {
                 toggleMode("hidden")
+
+                //reloading other components
+                context.emit('player-updated')
             }
         }
 
@@ -297,6 +324,24 @@ export default {
             })
         }
 
+        //add show to watchlist
+        function addPlaylist() {
+            const token = localStorage.jwt
+            const user = decodeToken(token)
+
+            let fetchOptions = {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({UID: user.id, SID: Number(props.showID.value)})
+            }
+
+            fetch(api + "shows/list/add", fetchOptions).then(async resp => {
+                data.show = await getShow(props.showID.value)
+            })
+        }
+
         //watching for prop changes, initate player on change
         watch(() => props.showID.value, async () => {
             console.clear()
@@ -304,6 +349,7 @@ export default {
             init()
         })
 
+        //recalc 1:9 on window resize
         window.addEventListener("resize", () => {
             if (modeGlobal == "active") {
                 const frame = document.getElementById("mediaFrame")
@@ -313,7 +359,7 @@ export default {
             }
         })
 
-        return {closePlayer, data, player, setVivoSource, saveAsWatched, playFirst}
+        return {closePlayer, data, player, setVivoSource, saveAsWatched, playFirst, addPlaylist}
     }
 }
 </script>
@@ -502,6 +548,24 @@ export default {
         text-align: left;
         padding: 10px;
         margin-bottom: 20px;
+        position: relative;
+    }
+
+    .addWatchlist {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        cursor: pointer;
+        padding: 10px;
+        transform: scale(1.4);
+    }
+
+    .addWatchlist:hover {
+        transform: scale(1.5);
+    }
+
+    .addWatchlist .gg-play-list-check {
+        color: var(--bright);
     }
 
     .genres {
@@ -559,6 +623,26 @@ export default {
 
     .episode * {
         display: inline-block;
+    }
+
+    .episode .gg-play-button-o {
+        display: none;
+    }
+
+    .episodePlaying {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .episodePlaying * {
+        color: var(--bright);
+        font-weight: bold;
+    }
+
+    .episodePlaying .gg-play-button-o {
+        display: inline-block;
+        float: left;
+        margin-right: 10px;
     }
 
     .iconWrapper {
