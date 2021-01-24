@@ -11,6 +11,9 @@
                     <i class="gg-play-button-o"></i>
                     <p>Jetzt ansehen</p>
                 </div>
+                <div v-if="player.adSkip == true" class="skipAds">
+                    <i class="gg-play-track-next-o"></i>
+                </div>
                 <div class="closePlayerMobile" @click="closePlayer()">
                     <i class="gg-close"></i>
                 </div>
@@ -84,7 +87,7 @@ export default {
     },
     setup(props, context) {
         const data = reactive({show: {}})
-        const player = reactive({source: "", trailerMode: false})
+        const player = reactive({source: "", trailerMode: false, adSkip: true})
         var modeGlobal = "hidden"
 
         function sleep(ms) {
@@ -95,6 +98,8 @@ export default {
         async function init() {
             console.log("initiating player");
             toggleMode("load")
+
+            player.adSkip = true
 
             const show = await getShow(props.showID.value)
             console.log(show);
@@ -155,9 +160,11 @@ export default {
             console.log("new player source: " + source);
 
             if(source.includes("https://www.youtube.com/")) {
+                player.adSkip = false
                 player.trailerMode = true
             }
             else {
+                player.adSkip = true
                 player.trailerMode = false
             }
 
@@ -530,6 +537,30 @@ export default {
         vertical-align: middle;
         color: var(--white);
         cursor: pointer;
+    }
+
+    .skipAds {
+        position: absolute;
+        display: inline-block;
+        background-color: transparent;
+        top: 20px;
+        right: 20px;
+        opacity: .9;
+        cursor: pointer;
+    }
+
+    .skipAds i {
+        display: inline-block;
+        transform: scale(1.4);
+    }
+
+    .skipAds i:hover {
+        transform: scale(1.5);
+        color: var(--bright);
+    }
+
+    .skipAds i {
+        margin-left: 20px;
     }
 
     iframe {
