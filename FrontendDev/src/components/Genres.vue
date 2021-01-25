@@ -228,6 +228,7 @@ export default {
         box-shadow: 0px 3px 10px var(--shadow);
         cursor: pointer;
         position: relative;
+        background-color: var(--bright);
     }
 
     .overview {
@@ -282,5 +283,6 @@ export default {
         display: inline-block;
         height: 100%;
         border-radius: 5px;
+        min-width: 150px;
     }
 </style>

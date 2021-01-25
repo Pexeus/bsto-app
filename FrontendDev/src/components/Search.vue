@@ -45,13 +45,17 @@ export default {
             //activating loader
             data.status = "loading"
 
-            const query = document.getElementById("queryInput").value
+            const query = document.getElementById("queryInput").value.toLowerCase()
+
+            console.log(query);
 
             if (query != "") {
                 const response = await fetch(api + `search/${query}`)
                 const results = await response.json()
 
-                if (document.getElementById("queryInput").value == results.query) {
+                console.log(results);
+
+                if (document.getElementById("queryInput").value.toLowerCase() == results.query) {
                     data.results = results.results
                 }
             }

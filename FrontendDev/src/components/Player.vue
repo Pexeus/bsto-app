@@ -166,6 +166,9 @@ export default {
             else {
                 player.adSkip = true
                 player.trailerMode = false
+
+                const episode = document.getElementById(source)
+                episode.click()
             }
 
             console.log("trailerMode: " + player.trailerMode);

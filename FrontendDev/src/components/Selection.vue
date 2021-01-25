@@ -200,6 +200,7 @@ export default {
         cursor: pointer;
         position: relative;
         display: inline-block;
+        background-color: var(--bright);
     }
 
     .overview {
@@ -254,5 +255,6 @@ export default {
         display: inline-block;
         height: 100%;
         border-radius: 5px;
+        min-width: 150px;
     }
 </style>
