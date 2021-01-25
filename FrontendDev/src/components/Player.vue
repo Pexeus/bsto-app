@@ -1,5 +1,5 @@
 <template>
-    <div class="playerContainer" @click="closePlayer()">
+    <div class="playerContainer" @click="closePlayer()">a
         <div class="loader">
             <h3>Lade Episoden...</h3>
             <i class="gg-spinner-alt"></i>
@@ -11,7 +11,7 @@
                     <i class="gg-play-button-o"></i>
                     <p>Jetzt ansehen</p>
                 </div>
-                <div v-if="player.adSkip == true" class="skipAds">
+                <div v-if="player.adSkip == true" class="skipAds" @click="reloadPlayer()">
                     <i class="gg-play-track-next-o"></i>
                 </div>
                 <div class="closePlayerMobile" @click="closePlayer()">
@@ -140,6 +140,17 @@ export default {
             }
 
             setEpisodePlaying("https://vivo.sx/embed/" + vivoCode)
+        }
+
+        function reloadPlayer() {
+            const iframe = document.getElementById("mediaFrame")
+            const src = iframe.src
+
+            iframe.src = ""
+
+            setTimeout(() => {
+                iframe.src = src
+            }, 100);
         }
 
         //marking an episode as currently playing
@@ -369,7 +380,7 @@ export default {
             }
         })
 
-        return {closePlayer, data, player, setVivoSource, saveAsWatched, playFirst, addPlaylist}
+        return {closePlayer, data, player, setVivoSource, saveAsWatched, playFirst, addPlaylist, reloadPlayer}
     }
 }
 </script>
